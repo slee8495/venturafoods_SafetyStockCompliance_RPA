@@ -7,9 +7,8 @@ library(reshape2)
 library(skimr)
 
 # Depending on the two locations  - Activate or Deactivate
-# Line 400 - 571 is temporary when we don't have 86, 226, 381 in MicroStrategy
-# Line 299 - 399 is after the location is fixed in the MicroStrategy
-
+# Line 317 - 420 is after the location is fixed in the MicroStrategy
+# Line 420 - 565 is temporary when we don't have 86, 226, 381 in MicroStrategy
 
 # Reading and tidying files 
 # up to 32:30
@@ -21,6 +20,19 @@ library(skimr)
 
 
 ############################### Phase 1 ############################
+# Stock type
+load("stock_type.rds")
+
+# previous SS_Metrics file ----
+ssmetrics_pre <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Copy of Safety Stock Compliance Report Data v3 - 06.20.22.xlsx",
+                             col_names = FALSE)
+
+ssmetrics_pre[-1, ] -> ssmetrics_pre
+colnames(ssmetrics_pre) <- ssmetrics_pre[1, ]
+ssmetrics_pre[-1, ] -> ssmetrics_pre
+names(ssmetrics_pre) <- str_replace_all(names(ssmetrics_pre), c(" " = "_"))
+names(ssmetrics_pre) <- str_replace_all(names(ssmetrics_pre), c("/" = "_"))
+
 
 # Planner_address Change Directory only when you need to ----
 Planner_address <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/FG/FG test/Address Book - 06.08.22.xlsx", 
@@ -570,5 +582,53 @@ JDOH_complete %>%
 ################################################################################################################################
 
 
+## SS Metrics
+ssmetrics <- ""
+data.frame(ssmetrics) -> ssmetrics
 
+ssmetrics %>%
+  dplyr::select(-ssmetrics) %>% 
+  dplyr::mutate(ref = "",
+                Location = "",
+                Item = "",
+                Stock_Type = "",
+                Description = "",
+                Balance_Usable = "",
+                Balance_Hold = "",
+                Lot_Status = "",
+                On_Hand = "",
+                Safety_Stock = "",
+                GL_Class = "",
+                Planner_No = "",
+                Planner_Name = "") -> ssmetrics
+
+
+rbind(ssmetrics, JDOH_complete) -> ssmetrics
+
+ssmetrics[-1, ] -> ssmetrics
+
+readr::type_convert(ssmetrics) -> ssmetrics
+
+ssmetrics %>% 
+  dplyr::mutate(date = Sys.Date()) %>% 
+  dplyr::relocate(date, .after = ref) -> ssmetrics
+
+# Type - vlookup
+ssmetrics_pre[-which(duplicated(ssmetrics_pre$Item)),] -> ssmetrics_pre_1
+
+merge(ssmetrics, ssmetrics_pre_1[, c("Item", "Type")], by = "Item", all.x = TRUE) -> ssmetrics
+
+# Stocking Type Description - vlookup
+merge(ssmetrics, stock_type[, c("Stock_Type", "Stocking_Type_Description")], by = "Stock_Type", all.x = TRUE) -> ssmetrics
+
+# MTO/MTS - vlookup
+merge(ssmetrics, exception_report[, c("ref", "Order_Policy_Code")], by = "ref", all.x = TRUE) %>% 
+  dplyr::rename(MTO_MTS = Order_Policy_Code) -> ssmetrics
+
+# Hold Status - vlookup
+
+# MPF - vlookup
+
+
+## I'm working on "Copy of Safety Stock Compliance Report Data v3 - 06.20.22" last tab
 
