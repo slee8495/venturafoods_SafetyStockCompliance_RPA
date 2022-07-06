@@ -570,7 +570,7 @@ JDOH_complete %>%
 
 
 
-## SS Metrics
+################################# SS Metrics ##################################
 ssmetrics <- ""
 data.frame(ssmetrics) -> ssmetrics
 
@@ -613,9 +613,30 @@ merge(ssmetrics, stock_type[, c("Stock_Type", "Stocking_Type_Description")], by 
 merge(ssmetrics, exception_report[, c("ref", "Order_Policy_Code")], by = "ref", all.x = TRUE) %>% 
   dplyr::rename(MTO_MTS = Order_Policy_Code) -> ssmetrics
 
-# Hold Status - vlookup
+# Lot Status, Hold Status - vlookup
+merge(ssmetrics, Lot_Status[, c("Lot_Status", "Hold_Status")], by = "Lot_Status", all.x = TRUE) -> ssmetrics
 
 # MPF - vlookup
+merge(ssmetrics, exception_report[, c("ref", "MPF_or_Line")], by = "ref", all.x = TRUE) %>% 
+  dplyr::rename(MPF = MPF_or_Line) -> ssmetrics
+
+# I need to map the rule for personal insights involved from Micro Strategy
+# Type edit
+ssmetrics %>%
+  dplyr::filter(!is.na(Type) & Stocking_Type_Description != "Consigned Inventory") %>% 
+  dplyr::mutate(Type = ifelse(is.na(Type) & Stocking_Type_Description == "WORK IN PROCESS", "WIP", Type)) %>% 
+  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Make" | 
+                                Stocking_Type_Description == "Purchased" | 
+                                Stocking_Type_Description ==  "Transfer", "Finished Goods", Type)) %>% 
+  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Obsolete - Use Up", "Insert your insight here", Type)) %>% 
+  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Raw Material", "need more logic", Type)) -> ssmetrics
+
+# MTO/MTS
+ssmetrics %>% 
+  dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Obsolete - Use Up", "DNRR", MTO_MTS)  ) %>% 
+  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Obsolete - Use Up", "DNRR", MPF)  ) %>% 
+  dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Consigned Inventory", "N/A", MTO_MTS)  ) %>% 
+  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Consigned Inventory", "N/A", MPF)  ) 
 
 
-## I'm working on "Copy of Safety Stock Compliance Report Data v3 - 06.20.22" last tab
+# 40:10 we move to pivot
