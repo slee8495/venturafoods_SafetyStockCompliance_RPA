@@ -620,7 +620,17 @@ merge(ssmetrics, Lot_Status[, c("Lot_Status", "Hold_Status")], by = "Lot_Status"
 merge(ssmetrics, exception_report[, c("ref", "MPF_or_Line")], by = "ref", all.x = TRUE) %>% 
   dplyr::rename(MPF = MPF_or_Line) -> ssmetrics
 
+
+# MTO/MTS
+ssmetrics %>% 
+  dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Obsolete - Use Up", "DNRR", MTO_MTS)  ) %>% 
+  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Obsolete - Use Up", "DNRR", MPF)  ) %>% 
+  dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Consigned Inventory", "N/A", MTO_MTS)  ) %>% 
+  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Consigned Inventory", "N/A", MPF)  ) 
+
 # I need to map the rule for personal insights involved from Micro Strategy
+# Maybe this should be resolved with machine learning algorithm from the big data
+
 # Type edit
 ssmetrics %>%
   dplyr::filter(!is.na(Type) & Stocking_Type_Description != "Consigned Inventory") %>% 
@@ -631,12 +641,6 @@ ssmetrics %>%
   dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Obsolete - Use Up", "Insert your insight here", Type)) %>% 
   dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Raw Material", "need more logic", Type)) -> ssmetrics
 
-# MTO/MTS
-ssmetrics %>% 
-  dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Obsolete - Use Up", "DNRR", MTO_MTS)  ) %>% 
-  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Obsolete - Use Up", "DNRR", MPF)  ) %>% 
-  dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Consigned Inventory", "N/A", MTO_MTS)  ) %>% 
-  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Consigned Inventory", "N/A", MPF)  ) 
-
 
 # 40:10 we move to pivot
+# add platform category
