@@ -682,13 +682,13 @@ rbind(ssmetrics_main, ssmetrics_second_main) -> ssmetrics_main
 # I need to map the rule for personal insights involved from Micro Strategy
 # Maybe this should be resolved with machine learning algorithm from the big data
 
+ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/ssmetrics_main_board.xlsx",
+                         col_names = FALSE)
 
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard.RData")
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard.rds")
 
-xlsbtest <- read_xlsb(path = "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 06.27.22 (1).xlsb",
-                      sheet = "SS metrics")
-                      
-
-
+load("ssmetrics_mainboard.rds")
 
 # 40:10 we move to pivot
 # add platform category
