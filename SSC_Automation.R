@@ -5,10 +5,36 @@ library(readxl)
 library(writexl)
 library(reshape2)
 library(skimr)
+
 # ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/ssmetrics_main_board.xlsx",
 #                          col_names = FALSE)
 
 load("ssmetrics_mainboard.rds")
+
+colnames(ssmetrics_mainboard) <- ssmetrics_mainboard[1, ]
+ssmetrics_mainboard[-1, ] -> ssmetrics_mainboard
+names(ssmetrics_mainboard) <- str_replace_all(names(ssmetrics_mainboard), c(" " = "_"))
+names(ssmetrics_mainboard) <- str_replace_all(names(ssmetrics_mainboard), c("/" = "_"))
+names(ssmetrics_mainboard) <- str_replace_all(names(ssmetrics_mainboard), c("-" = "_"))
+
+
+ssmetrics_mainboard %>% 
+  dplyr::mutate(Ref = gsub("-", "_", Ref),
+                Campus_Ref = gsub("-", "_", Campus_Ref)) -> ssmetrics_mainboard
+
+readr::type_convert(ssmetrics_mainboard) -> ssmetrics_mainboard
+
+colnames(ssmetrics_mainboard)[8] <- "campus"
+colnames(ssmetrics_mainboard)[9] <- "date"
+colnames(ssmetrics_mainboard)[12] <- "Description"
+colnames(ssmetrics_mainboard)[14] <- "Stock_Type"
+colnames(ssmetrics_mainboard)[17] <- "MPF_Line"
+colnames(ssmetrics_mainboard)[18] <- "Safety_Stock"
+colnames(ssmetrics_mainboard)[19] <- "Balance_Usable"
+colnames(ssmetrics_mainboard)[20] <- "Balance_Hold"
+colnames(ssmetrics_mainboard)[21] <- "ref"
+colnames(ssmetrics_mainboard)[22] <- "campus_ref"
+
 
 ############################### Phase 1 ############################
 
@@ -619,40 +645,52 @@ ssmetrics %>%
   dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Consigned Inventory", "N/A", MTO_MTS)  ) %>% 
   dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Consigned Inventory", "N/A", MPF)  ) -> ssmetrics
 
-
-# Divide ssmetrics into two. one with N/A, the other one without N/A
+# MTO - 4
 ssmetrics %>% 
-  dplyr::filter(is.na(Type)) %>% 
-  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "WORK IN PROCESS", "WIP", NA)) %>% 
-  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Make" | 
-                                Stocking_Type_Description == "Purchased" | 
-                                Stocking_Type_Description ==  "Transfer", "Finished Goods", NA)) %>% 
-  dplyr::filter(!is.na(Type)) -> ssmetrics_second_main
+  dplyr::filter(MTO_MTS == 4) %>% 
+  dplyr::filter(Type %in% c("Finished Goods", "Ingredients", "Label", "Packaging")) -> ssmetrics
 
 ssmetrics %>% 
-  dplyr::filter(is.na(Type)) %>% 
-  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "WORK IN PROCESS", "WIP", NA)) %>% 
-  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Make" | 
-                                Stocking_Type_Description == "Purchased" | 
-                                Stocking_Type_Description ==  "Transfer", "Finished Goods", NA)) %>% 
-  dplyr::filter(is.na(Type)) -> ssmetrics_na
+  dplyr::filter(is.na(Type)) -> ssmetrics_2
+
+# Type N/A
+ssmetrics_mainboard %>% 
+  dplyr::select(Item, Type) -> ssmetrics_mainboard_type
+
+ssmetrics_mainboard_type[!duplicated(ssmetrics_mainboard_type[,c("Item", "Type")]),] -> ssmetrics_mainboard_type
+
+merge(ssmetrics_2, ssmetrics_mainboard_type[, c("Item", "Type")], by = "Item", all.x = TRUE) %>% 
+  dplyr::relocate(Type.y, .after = Type.x) %>% 
+  dplyr::select(-Type.x) %>% 
+  dplyr::rename(Type = Type.y) -> ssmetrics_2
+
+rbind(ssmetrics, ssmetrics_2) -> ssmetrics
 
 
-ssmetrics %>% 
-  dplyr::filter(!is.na(Type)) -> ssmetrics_main
+# what if still N/A? that's new items
+
+types_for_na <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/.xlsx",
+                           col_names = FALSE)
+
+## waiting for Linda's access grant
+
+# Categories and platforms
+## waiting for Linda's response about RM
 
 
-rbind(ssmetrics_main, ssmetrics_second_main) -> ssmetrics_main
-
-
-# Need to work on "ssmetrics_na"
-# I need to map the rule for personal insights involved from Micro Strategy
-# Maybe this should be resolved with machine learning algorithm from the big data
 
 
 
+
+# for new item -> Linda sent me the dossier 
+# Categories and platforms -> same logic
 
 # 40:10 we move to pivot
 # add platform category
 # add vlookup formula for Type for ssmetrics_na
+
+
+
+
+
 
