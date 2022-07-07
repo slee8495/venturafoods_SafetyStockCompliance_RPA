@@ -6,19 +6,10 @@ library(writexl)
 library(reshape2)
 library(skimr)
 library(readxlsb)
+# ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/ssmetrics_main_board.xlsx",
+#                          col_names = FALSE)
 
-# Depending on the two locations  - Activate or Deactivate
-# Line 317 - 420 is after the location is fixed in the MicroStrategy
-# Line 420 - 565 is temporary when we don't have 86, 226, 381 in MicroStrategy
-
-# Reading and tidying files 
-# up to 32:30
-# This is done!
-
-
-# 33:55 -> create column only graph -> and then I will add up
-
-
+load("ssmetrics_mainboard.rds")
 
 ############################### Phase 1 ############################
 # Stock type
@@ -682,13 +673,8 @@ rbind(ssmetrics_main, ssmetrics_second_main) -> ssmetrics_main
 # I need to map the rule for personal insights involved from Micro Strategy
 # Maybe this should be resolved with machine learning algorithm from the big data
 
-ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/ssmetrics_main_board.xlsx",
-                         col_names = FALSE)
 
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard.RData")
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard.rds")
 
-load("ssmetrics_mainboard.rds")
 
 # 40:10 we move to pivot
 # add platform category

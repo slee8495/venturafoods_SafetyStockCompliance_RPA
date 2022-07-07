@@ -5,19 +5,10 @@ library(readxl)
 library(writexl)
 library(reshape2)
 library(skimr)
+# ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/ssmetrics_main_board.xlsx",
+#                          col_names = FALSE)
 
-# Depending on the two locations  - Activate or Deactivate
-# Line 317 - 420 is after the location is fixed in the MicroStrategy
-# Line 420 - 565 is temporary when we don't have 86, 226, 381 in MicroStrategy
-
-# Reading and tidying files 
-# up to 32:30
-# This is done!
-
-
-# 33:55 -> create column only graph -> and then I will add up
-
-
+load("ssmetrics_mainboard.rds")
 
 ############################### Phase 1 ############################
 
@@ -660,12 +651,8 @@ rbind(ssmetrics_main, ssmetrics_second_main) -> ssmetrics_main
 
 
 
-xlsbtest <- read_xlsb(path = "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 06.27.22 (1).xlsb",
-                      sheet = "SS metrics")
-
-
-
 
 # 40:10 we move to pivot
 # add platform category
 # add vlookup formula for Type for ssmetrics_na
+
