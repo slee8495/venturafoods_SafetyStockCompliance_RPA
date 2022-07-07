@@ -626,21 +626,46 @@ ssmetrics %>%
   dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Obsolete - Use Up", "DNRR", MTO_MTS)  ) %>% 
   dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Obsolete - Use Up", "DNRR", MPF)  ) %>% 
   dplyr::mutate(MTO_MTS = ifelse(is.na(MTO_MTS) & Stocking_Type_Description == "Consigned Inventory", "N/A", MTO_MTS)  ) %>% 
-  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Consigned Inventory", "N/A", MPF)  ) 
+  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Consigned Inventory", "N/A", MPF)  ) -> ssmetrics
 
+
+# Divide ssmetrics into two. one with N/A, the other one without N/A
+ssmetrics %>% 
+  dplyr::filter(is.na(Type)) %>% 
+  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "WORK IN PROCESS", "WIP", NA)) %>% 
+  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Make" | 
+                                Stocking_Type_Description == "Purchased" | 
+                                Stocking_Type_Description ==  "Transfer", "Finished Goods", NA)) %>% 
+  dplyr::filter(!is.na(Type)) -> ssmetrics_second_main
+
+ssmetrics %>% 
+  dplyr::filter(is.na(Type)) %>% 
+  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "WORK IN PROCESS", "WIP", NA)) %>% 
+  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Make" | 
+                                Stocking_Type_Description == "Purchased" | 
+                                Stocking_Type_Description ==  "Transfer", "Finished Goods", NA)) %>% 
+  dplyr::filter(is.na(Type)) -> ssmetrics_na
+
+
+ssmetrics %>% 
+  dplyr::filter(!is.na(Type)) -> ssmetrics_main
+
+
+rbind(ssmetrics_main, ssmetrics_second_main) -> ssmetrics_main
+
+
+# Need to work on "ssmetrics_na"
 # I need to map the rule for personal insights involved from Micro Strategy
 # Maybe this should be resolved with machine learning algorithm from the big data
 
-# Type edit
-ssmetrics %>%
-  dplyr::filter(!is.na(Type) & Stocking_Type_Description != "Consigned Inventory") %>% 
-  dplyr::mutate(Type = ifelse(is.na(Type) & Stocking_Type_Description == "WORK IN PROCESS", "WIP", Type)) %>% 
-  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Make" | 
-                                Stocking_Type_Description == "Purchased" | 
-                                Stocking_Type_Description ==  "Transfer", "Finished Goods", Type)) %>% 
-  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Obsolete - Use Up", "Insert your insight here", Type)) %>% 
-  dplyr::mutate(Type = ifelse(Stocking_Type_Description == "Raw Material", "need more logic", Type)) -> ssmetrics
+
+
+xlsbtest <- read_xlsb(path = "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 06.27.22 (1).xlsb",
+                      sheet = "SS metrics")
+
+
 
 
 # 40:10 we move to pivot
 # add platform category
+# add vlookup formula for Type for ssmetrics_na
