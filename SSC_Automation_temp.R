@@ -41,6 +41,21 @@ colnames(ssmetrics_mainboard)[22] <- "campus_ref"
 # Stock type
 load("stock_type.rds")
 
+# Campus reference
+campus_ref <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/campus reference.xlsx",
+                         col_names = FALSE)
+
+colnames(campus_ref) <- campus_ref[1, ]
+campus_ref[-1, ] -> campus_ref
+
+colnames(campus_ref)[1] <- "Location"
+colnames(campus_ref)[3] <- "Campus"
+colnames(campus_ref)[4] <- "campus_no"
+
+campus_ref %>% 
+  dplyr::mutate(Campus = replace(Campus, is.na(Campus), 0)) -> campus_ref
+
+
 # Lot Status
 Lot_Status <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/Lot Status Code.xlsx",
                          col_names = FALSE)
@@ -50,7 +65,8 @@ Lot_Status[-1, ] -> Lot_Status
 
 Lot_Status %>% 
   dplyr::rename(Lot_Status = "Lot status",
-                Hold_Status = "Hard/Soft Hold") -> Lot_Status
+                Hold_Status = "Hard/Soft Hold") %>% 
+  dplyr::select(Lot_Status, Hold_Status) -> Lot_Status
 
 # previous SS_Metrics file ----
 ssmetrics_pre <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Copy of Safety Stock Compliance Report Data v3 - 06.20.22.xlsx",
@@ -655,7 +671,15 @@ merge(ssmetrics, exception_report[, c("ref", "Order_Policy_Code")], by = "ref", 
   dplyr::rename(MTO_MTS = Order_Policy_Code) -> ssmetrics
 
 # Lot Status, Hold Status - vlookup
+ssmetrics %>% 
+  dplyr::mutate(Lot_Status = replace(Lot_Status, is.na(Lot_Status),"")) -> ssmetrics
+
 merge(ssmetrics, Lot_Status[, c("Lot_Status", "Hold_Status")], by = "Lot_Status", all.x = TRUE) -> ssmetrics
+
+ssmetrics %>% 
+  dplyr::mutate(Hold_Status.y = ifelse(Lot_Status == "", "", Hold_Status)) %>% 
+  dplyr::select(-Hold_Status) %>% 
+  dplyr::rename(Hold_Status = Hold_Status.y) -> ssmetrics
 
 # MPF - vlookup
 merge(ssmetrics, exception_report[, c("ref", "MPF_or_Line")], by = "ref", all.x = TRUE) %>% 
@@ -737,8 +761,34 @@ merge(ssmetrics, ssmetrics_mainboard_plat[, c("Item", "Platform")], by = "Item",
 # add vlookup formula for Type for ssmetrics_na
 
 
-# 
-ssmetrics
+# Pivot Hold Qty
+ssmetrics %>% 
+  dplyr::filter(Hold_Status %in% c("", "Soft")) %>% 
+  reshape2::dcast(date + Location + Item + Description ~ . , value.var = "Balance_Hold", sum) %>% 
+  dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
+  dplyr::relocate(ref) %>% 
+  dplyr::rename(Balance_Hold = ".") -> Pivot_hold_qty
 
+# Pivot itmbal
+ssmetrics %>% 
+  reshape2::dcast(date + Location + Item + Description + Type + Stocking_Type_Description + Planner_Name + MTO_MTS + MPF + Safety_Stock +
+                    Balance_Usable ~ .) %>% 
+  dplyr::select(-.) %>% 
+  dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
+  dplyr::relocate(ref) -> Pivot_itmbal
+
+
+merge(Pivot_itmbal, Pivot_hold_qty[, c("ref", "Balance_Hold")], by = "ref", all.x = TRUE) %>% 
+  dplyr::mutate(Balance_Hold = replace(Balance_Hold, is.na(Balance_Hold), 0)) %>% 
+  dplyr::relocate(-ref)-> Pivot_itmbal
+
+
+
+# Final SS Metrics
+Pivot_itmbal -> ssmetrics_final
+
+# campus & campus_ref
+merge(ssmetrics_final, campus_ref[, c("Location", "Campus")], by = "Location", all.x = TRUE) %>% 
+  dplyr::mutate()
 
 
