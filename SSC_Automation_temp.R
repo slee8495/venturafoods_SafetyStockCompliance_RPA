@@ -737,7 +737,8 @@ merge(ssmetrics, ssmetrics_mainboard_plat[, c("Item", "Platform")], by = "Item",
 # add vlookup formula for Type for ssmetrics_na
 
 
-
+# 
+ssmetrics
 
 
 
