@@ -5,7 +5,7 @@ library(readxl)
 library(writexl)
 library(reshape2)
 library(skimr)
-library(readxlsb)
+
 # ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/ssmetrics_main_board.xlsx",
 #                          col_names = FALSE)
 
@@ -606,8 +606,8 @@ rbind(JDOH, Inv_all_pivot_86_226_381_for_JDOH) -> JDOH_complete
 JDOH_complete %>%
   dplyr::mutate(On_Hand = Balance_Usable + Balance_Hold) -> JDOH_complete
 
-# ################################################################################################################################
-# ############################################## up to here. two location resovled -> deactivated ################################
+################################################################################################################################
+############################################## up to here. two location resovled -> deactivated ################################
 ################################################################################################################################
 
 
@@ -691,16 +691,39 @@ merge(ssmetrics_2, ssmetrics_mainboard_type[, c("Item", "Type")], by = "Item", a
 rbind(ssmetrics, ssmetrics_2) -> ssmetrics
 
 
+
+
 # what if still N/A? that's new items
 
+# this is where you will need to read Micro Strategy from Linda's access grant
 types_for_na <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/.xlsx",
                                  col_names = FALSE)
 
-## waiting for Linda's access grant
 
-# Categories and platforms
-## waiting for Linda's response about RM
 
+
+
+
+# Categories vlookup from mega data
+ssmetrics_mainboard %>% 
+  dplyr::select(Item, Category) -> ssmetrics_mainboard_cat
+
+ssmetrics_mainboard_cat[!duplicated(ssmetrics_mainboard_cat[,c("Item", "Category")]),] -> ssmetrics_mainboard_cat
+ssmetrics_mainboard_cat[-which(duplicated(ssmetrics_mainboard_cat$Item)),] -> ssmetrics_mainboard_cat
+
+merge(ssmetrics, ssmetrics_mainboard_cat[, c("Item", "Category")], by = "Item", all.x = TRUE) -> ssmetrics  
+# here you have N/A for new SKUs. need MS
+
+
+# Platform vlookup from mega data
+ssmetrics_mainboard %>% 
+  dplyr::select(Item, Platform) -> ssmetrics_mainboard_plat
+
+ssmetrics_mainboard_plat[!duplicated(ssmetrics_mainboard_plat[,c("Item", "Platform")]),] -> ssmetrics_mainboard_plat
+ssmetrics_mainboard_plat[-which(duplicated(ssmetrics_mainboard_plat$Item)),] -> ssmetrics_mainboard_plat
+
+merge(ssmetrics, ssmetrics_mainboard_plat[, c("Item", "Platform")], by = "Item", all.x = TRUE) -> ssmetrics  
+# here you have N/A for new SKUs. need MS
 
 
 
