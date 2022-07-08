@@ -631,7 +631,15 @@ merge(ssmetrics, exception_report[, c("ref", "Order_Policy_Code")], by = "ref", 
   dplyr::rename(MTO_MTS = Order_Policy_Code) -> ssmetrics
 
 # Lot Status, Hold Status - vlookup
+ssmetrics %>% 
+  dplyr::mutate(Lot_Status = replace(Lot_Status, is.na(Lot_Status),"")) -> ssmetrics
+
 merge(ssmetrics, Lot_Status[, c("Lot_Status", "Hold_Status")], by = "Lot_Status", all.x = TRUE) -> ssmetrics
+
+ssmetrics %>% 
+  dplyr::mutate(Hold_Status.y = ifelse(Lot_Status == "", "", Hold_Status)) %>% 
+  dplyr::select(-Hold_Status) %>% 
+  dplyr::rename(Hold_Status = Hold_Status.y) -> ssmetrics
 
 # MPF - vlookup
 merge(ssmetrics, exception_report[, c("ref", "MPF_or_Line")], by = "ref", all.x = TRUE) %>% 
@@ -711,3 +719,107 @@ merge(ssmetrics, ssmetrics_mainboard_plat[, c("Item", "Platform")], by = "Item",
 # 40:10 we move to pivot
 # add platform category
 # add vlookup formula for Type for ssmetrics_na
+
+
+# Pivot Hold Qty
+ssmetrics %>% 
+  dplyr::filter(Hold_Status %in% c("", "Soft")) %>% 
+  reshape2::dcast(date + Location + Item + Description ~ . , value.var = "Balance_Hold", sum) %>% 
+  dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
+  dplyr::relocate(ref) %>% 
+  dplyr::rename(Balance_Hold = ".") -> Pivot_hold_qty
+
+# Pivot itmbal
+ssmetrics %>% 
+  reshape2::dcast(date + Location + Item + Description + Type + Stocking_Type_Description + Planner_Name + MTO_MTS + MPF + Safety_Stock +
+                    Balance_Usable ~ .) %>% 
+  dplyr::select(-.) %>% 
+  dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
+  dplyr::relocate(ref) -> Pivot_itmbal
+
+
+merge(Pivot_itmbal, Pivot_hold_qty[, c("ref", "Balance_Hold")], by = "ref", all.x = TRUE) %>% 
+  dplyr::mutate(Balance_Hold = replace(Balance_Hold, is.na(Balance_Hold), 0)) %>% 
+  dplyr::relocate(-ref)-> Pivot_itmbal
+
+
+
+# Final SS Metrics
+Pivot_itmbal -> ssmetrics_final
+
+# campus & campus_ref
+merge(ssmetrics_final, campus_ref[, c("Location", "Campus")], by = "Location", all.x = TRUE) %>% 
+  dplyr::mutate(campus_ref = ifelse(Campus != 0, paste0(Campus, "-", Item), ref)) %>% 
+  dplyr::mutate(Campus = gsub(0, "", Campus)) %>% 
+  dplyr::relocate(Campus) -> ssmetrics_final
+
+# Current SS Alert
+ssmetrics_final %>% 
+  dplyr::mutate(current_ss_alert = ifelse(Safety_Stock == 0, "N/A", 
+                                          ifelse(Balance_Usable + Balance_Hold < Safety_Stock, "Below SS", "OK"))) -> ssmetrics_final
+
+
+
+
+# Total Cust Order
+merge(ssmetrics_final, custord_pivot[, c("ref", "total_cust_order")], by = "ref", all.x = TRUE) %>% 
+  dplyr::mutate(total_cust_order = replace(total_cust_order, is.na(total_cust_order), 0)) -> ssmetrics_final
+
+
+# cust_order_qty_in_the_next_5_days
+merge(ssmetrics_final, custord_pivot[, c("ref", "Y")], by = "ref", all.x = TRUE) %>% 
+  dplyr::mutate(Y = replace(Y, is.na(Y), 0)) %>% 
+  dplyr::rename(cust_order_in_the_next_5_days = Y) -> ssmetrics_final
+
+# wo_qty_in_the_next_5_days
+merge(ssmetrics_final, wo_pivot[, c("ref", "Y")], by = "ref", all.x = TRUE) %>% 
+  dplyr::mutate(Y = replace(Y, is.na(Y), 0)) %>% 
+  dplyr::rename(wo_qty_in_the_next_5_days = Y) -> ssmetrics_final
+
+# receipt_qty_in_the_next_5_days
+merge(ssmetrics_final, receipt_pivot[, c("ref", "Y")], by = "ref", all.x = TRUE) %>% 
+  dplyr::mutate(Y = replace(Y, is.na(Y), 0)) %>% 
+  dplyr::rename(receipt_qty_in_the_next_5_days = Y) -> ssmetrics_final
+
+# po_qty_in_the_next_5_days
+merge(ssmetrics_final, PO_Pivot[, c("ref", "Y")], by = "ref", all.x = TRUE) %>% 
+  dplyr::mutate(Y = replace(Y, is.na(Y), 0)) %>% 
+  dplyr::rename(po_qty_in_the_next_5_days = Y) -> ssmetrics_final
+
+
+# SS Alert after Cust Order in the next 5 days + WO & Receipt
+ssmetrics_final %>% 
+  dplyr::mutate(ss_alert_after = ifelse(Safety_Stock == 0, "N/A",
+                                        ifelse((Balance_Usable + Balance_Hold + wo_qty_in_the_next_5_days + 
+                                                  receipt_qty_in_the_next_5_days + 
+                                                  po_qty_in_the_next_5_days - cust_order_in_the_next_5_days) >= Safety_Stock, "OK",
+                                               ifelse(wo_qty_in_the_next_5_days + receipt_qty_in_the_next_5_days + 
+                                                        po_qty_in_the_next_5_days == 0, 
+                                                      "Below SS with no supply","Below SS")))) -> ssmetrics_final
+
+
+# Campus SS
+plyr::ddply(ssmetrics_final, "campus_ref", transform, campus_ss = sum(Safety_Stock)) -> ssmetrics_final
+
+
+# campus_total_available
+plyr::ddply(ssmetrics_final, "campus_ref", transform, campus_total_available_1 = sum(Balance_Usable)) -> ssmetrics_final
+plyr::ddply(ssmetrics_final, "campus_ref", transform, campus_total_available_2 = sum(Balance_Hold)) -> ssmetrics_final
+
+ssmetrics_final %>% 
+  dplyr::mutate(campus_total_available = campus_total_available_1 + campus_total_available_2) %>% 
+  dplyr::select(-campus_total_available_1, -campus_total_available_2) -> ssmetrics_final
+
+
+
+##### weekly result #####
+writexl::write_xlsx(ssmetrics_final, "SS Metrics 0620.xlsx")
+
+
+
+
+# Let's figure this out!
+############ save & update mega data ###############
+ssmetrics_mainboard
+
+## Line 720 ~ 750 still needs to be figured
