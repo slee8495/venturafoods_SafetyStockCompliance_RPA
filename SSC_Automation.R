@@ -712,15 +712,6 @@ merge(ssmetrics, ssmetrics_mainboard_plat[, c("Item", "Platform")], by = "Item",
 
 
 
-
-# for new item -> Linda sent me the dossier 
-# Categories and platforms -> same logic
-
-# 40:10 we move to pivot
-# add platform category
-# add vlookup formula for Type for ssmetrics_na
-
-
 # Pivot Hold Qty
 ssmetrics %>% 
   dplyr::filter(Hold_Status %in% c("", "Soft")) %>% 
@@ -732,7 +723,7 @@ ssmetrics %>%
 # Pivot itmbal
 ssmetrics %>% 
   reshape2::dcast(date + Location + Item + Description + Type + Stocking_Type_Description + Planner_Name + MTO_MTS + MPF + Safety_Stock +
-                    Balance_Usable ~ .) %>% 
+                    Balance_Usable + Category + Platform ~ .) %>% 
   dplyr::select(-.) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref) -> Pivot_itmbal
@@ -744,7 +735,7 @@ merge(Pivot_itmbal, Pivot_hold_qty[, c("ref", "Balance_Hold")], by = "ref", all.
 
 
 
-# Final SS Metrics
+##################### Final SS Metrics #####################
 Pivot_itmbal -> ssmetrics_final
 
 # campus & campus_ref
@@ -820,6 +811,17 @@ writexl::write_xlsx(ssmetrics_final, "SS Metrics 0620.xlsx")
 
 # Let's figure this out!
 ############ save & update mega data ###############
-ssmetrics_mainboard
+str(ssmetrics_final)
+str(ssmetrics_mainboard)
+
+
+# I colored in yellow that I already have. 
+# need to create more columns for the ones don't have yellow highlighted. 
+# Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 06.27.22 (1).xlsb
+
+
+
+
+
 
 ## Line 720 ~ 750 still needs to be figured
