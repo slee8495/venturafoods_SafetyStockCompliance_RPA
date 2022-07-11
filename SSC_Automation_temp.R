@@ -41,6 +41,27 @@ colnames(ssmetrics_mainboard)[22] <- "campus_ref"
 # Stock type
 load("stock_type.rds")
 
+# Macro-platform (change this only when there's a change) ----
+macro_platform <- read_excel("S:/Supply Chain Projects/RStudio/Macro-platform.xlsx",
+                             col_names = FALSE)
+
+colnames(macro_platform) <- macro_platform[1, ]
+macro_platform[-1, ] -> macro_platform
+
+colnames(macro_platform)[2] <- "macro_platform"
+
+# Location_Name (change this only when there's a change) ----
+location_name <- read_excel("S:/Supply Chain Projects/RStudio/Location_Name.xlsx",
+                             col_names = FALSE)
+
+colnames(location_name) <- location_name[1, ]
+location_name[-1, ] -> location_name
+
+location_name %>% 
+  dplyr::mutate(Location = as.numeric(Location)) -> location_name
+
+
+
 # Campus reference
 campus_ref <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/campus reference.xlsx",
                          col_names = FALSE)
@@ -54,6 +75,7 @@ colnames(campus_ref)[4] <- "campus_no"
 
 campus_ref %>% 
   dplyr::mutate(Campus = replace(Campus, is.na(Campus), 0)) -> campus_ref
+
 
 
 # Lot Status
@@ -841,28 +863,94 @@ ssmetrics_final %>%
   dplyr::mutate(campus_total_available = campus_total_available_1 + campus_total_available_2) %>% 
   dplyr::select(-campus_total_available_1, -campus_total_available_2) -> ssmetrics_final
 
+# month, FY, year
+ssmetrics_final %>% 
+  dplyr::mutate(month = lubridate::month(date),
+                year = lubridate::year(date),
+                FY = paste0("FY", lubridate::year(date)+1)) -> ssmetrics_final
+
+
+# Macro-platform
+ssmetrics_final %>% 
+  dplyr::left_join(macro_platform, by = "Platform") %>% 
+  dplyr::mutate(macro_platform = replace(macro_platform, is.na(macro_platform), Type)) -> ssmetrics_final
+
+# Location_Name
+ssmetrics_final %>% 
+  dplyr::left_join(location_name %>% select(1, 2), by = "Location") -> ssmetrics_final
+
+
+
+# Label
+ssmetrics_final %>% 
+  dplyr::mutate(Label = ifelse(Type == "Finished Goods", "label", NA)) -> ssmetrics_final
+
+ssmetrics_final$Item -> temp_item
+
+substr(temp_item, nchar(temp_item)-2, nchar(temp_item)) -> temp_label
+cbind(ssmetrics_final, temp_label) -> ssmetrics_final
+
+ssmetrics_final %>% 
+  dplyr::mutate(Label = ifelse(Label == "label", temp_label, NA)) %>% 
+  dplyr::select(-temp_label) -> ssmetrics_final
+
+
+# Sku_has_ss
+ssmetrics_final %>% 
+  dplyr::mutate(Sku_has_ss = ifelse(Safety_Stock > 0, 1, 0)) -> ssmetrics_final
+
+
+# Sku_greater_or_equal_ss
+ssmetrics_final %>% 
+  dplyr::mutate(Sku_greater_or_equal_ss = ifelse(Sku_has_ss == 1 & Balance_Usable + Balance_Hold >= Safety_Stock, 1, 0)) -> ssmetrics_final
+
+
+# Sku less ss
+ssmetrics_final %>% 
+  dplyr::mutate(Sku_less_ss = ifelse(Safety_Stock > (Balance_Usable + Balance_Hold), 1, 0)) -> ssmetrics_final
+
+# Sku less ss with supply
+ssmetrics_final %>% 
+  dplyr::mutate(Sku_less_ss_with_supply = ifelse(Safety_Stock > (Balance_Usable + Balance_Hold) & 
+                                                   (wo_qty_in_the_next_5_days + receipt_qty_in_the_next_5_days + 
+                                                      po_qty_in_the_next_5_days > 0), 1, 0)) -> ssmetrics_final
+
+
+# campus Sku has ss
+ssmetrics_final %>% 
+  dplyr::mutate(campus_Sku_ss =ifelse(campus_ss != 0 & campus_ss > 0, 1, 0)) -> ssmetrics_final
+
+# campus Sku greater equal ss
+ssmetrics_final %>% 
+  dplyr::mutate(campus_Sku_greater_equal_ss = ifelse(campus_Sku_ss == 1 & campus_total_available >= campus_ss, 1, 0)) -> ssmetrics_final
+
+
+# campus Sku less ss
+ssmetrics_final %>% 
+  dplyr::mutate(campus_Sku_less_ss = ifelse(campus_ss > campus_total_available, 1, 0)) -> ssmetrics_final
+
+
+
+
+# What to do here..
+# figure out with 5 columns with red highlight  (xlsb files in the automation)
+# relocate the columns
+# rename the columns
+## Line 720 ~ 750 still needs to be figured
+# after all that, let's test if I can upload the mega date to Micro
+
 
 
 ##### weekly result #####
-writexl::write_xlsx(ssmetrics_final, "SS Metrics 0620.xlsx")
+writexl::write_xlsx(ssmetrics_final, "SS Metrics 0620.xlsx") 
 
 
 
 
-# Let's figure this out!
+
 ############ save & update mega data ###############
 str(ssmetrics_final)
 str(ssmetrics_mainboard)
 
 
-# I colored in yellow that I already have. 
-# need to create more columns for the ones don't have yellow highlighted. 
-# Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 06.27.22 (1).xlsb
-
-
-
-
-
-
-## Line 720 ~ 750 still needs to be figured
 
