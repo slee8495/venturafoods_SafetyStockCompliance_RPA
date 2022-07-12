@@ -84,6 +84,27 @@ colnames(oil_aloc)[2] <- "oil_aloc"
 colnames(oil_aloc)[3] <- "comp_desc"
 
 
+# Inventory Model sdcv ----
+sdcv <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/Standard Deviation, CV,  July 2022 - 07.08.22.xlsx")
+
+sdcv[-1:-3,] -> sdcv
+colnames(sdcv) <- sdcv[1,]
+sdcv[-1, ] -> sdcv
+
+colnames(sdcv)[2] <- "Item"
+colnames(sdcv)[3] <- "ref"
+colnames(sdcv)[6] <- "last_6_month_sales"
+colnames(sdcv)[7] <- "last_12_month_sales"
+colnames(sdcv)[65] <- "total_forecast_next_12_months"
+
+sdcv %>%
+  dplyr::select(3, 6, 7, 65) %>%
+  dplyr::mutate(ref = gsub("-", "_", ref),
+                last_6_month_sales = as.double(last_6_month_sales),
+                last_12_month_sales = as.double(last_12_month_sales),
+                total_forecast_next_12_months = as.double(total_forecast_next_12_months)) -> sdcv
+
+sdcv[-which(duplicated(sdcv$ref)),] -> sdcv
 
 # Campus reference
 campus_ref <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/campus reference.xlsx",
@@ -968,13 +989,17 @@ ssmetrics_final %>%
   dplyr::mutate(oil_aloc_3 = ifelse(is.na(oil_aloc) & is.na(oil_aloc_2), "non oil allocation", NA)) %>% 
   dplyr::mutate(oil_allocation = oil_aloc,
                 oil_allocation = ifelse(is.na(oil_aloc), oil_aloc_2, oil_aloc),
-                oil_allocation = ifelse(is.na(oil_allocation), oil_aloc_3, oil_allocation)) -> ssmetrics_final
+                oil_allocation = ifelse(is.na(oil_allocation), oil_aloc_3, oil_allocation)) %>% 
+  dplyr::select(-oil_aloc, -oil_aloc_2, -oil_aloc_3) -> ssmetrics_final
   
+
+# mfg_line
+
 
 
 
 # What to do here..
-# figure out with 3 columns with red highlight  (xlsb files in the automation)
+# figure out with 3 columns with red highlight  (xlsb files in the automation - sdcv model.. make sure if I read it correctly first)
 # relocate the columns
 # rename the columns
 # Line 720 ~ 750 still needs to be figured

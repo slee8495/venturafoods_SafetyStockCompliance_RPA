@@ -883,13 +883,17 @@ ssmetrics_final %>%
   dplyr::mutate(oil_aloc_3 = ifelse(is.na(oil_aloc) & is.na(oil_aloc_2), "non oil allocation", NA)) %>% 
   dplyr::mutate(oil_allocation = oil_aloc,
                 oil_allocation = ifelse(is.na(oil_aloc), oil_aloc_2, oil_aloc),
-                oil_allocation = ifelse(is.na(oil_allocation), oil_aloc_3, oil_allocation)) -> ssmetrics_final
+                oil_allocation = ifelse(is.na(oil_allocation), oil_aloc_3, oil_allocation)) %>% 
+  dplyr::select(-oil_aloc, -oil_aloc_2, -oil_aloc_3) -> ssmetrics_final
+
+
+# mfg_line
 
 
 
 
 # What to do here..
-# figure out with 3 columns with red highlight  (xlsb files in the automation)
+# figure out with 3 columns with red highlight  (xlsb files in the automation - sdcv model.. make sure if I read it correctly first)
 # relocate the columns
 # rename the columns
 # Line 720 ~ 750 still needs to be figured
@@ -907,6 +911,4 @@ writexl::write_xlsx(ssmetrics_final, "SS Metrics 0620.xlsx")
 ############ save & update mega data ###############
 str(ssmetrics_final)
 str(ssmetrics_mainboard)
-
-
 
