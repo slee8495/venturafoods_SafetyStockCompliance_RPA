@@ -84,27 +84,25 @@ colnames(oil_aloc)[2] <- "oil_aloc"
 colnames(oil_aloc)[3] <- "comp_desc"
 
 
-# Inventory Model sdcv ----
-sdcv <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/Standard Deviation, CV,  July 2022 - 07.08.22.xlsx")
+# Inventory Model  (Make sure to remove the password of the original .xlsx file) ----
 
-sdcv[-1:-3,] -> sdcv
-colnames(sdcv) <- sdcv[1,]
-sdcv[-1, ] -> sdcv
+inventory_model <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/SS Optimization by Location - Finished Goods July 2022.xlsx",
+                              col_names = FALSE, sheet = "Fin Goods")
 
-colnames(sdcv)[2] <- "Item"
-colnames(sdcv)[3] <- "ref"
-colnames(sdcv)[6] <- "last_6_month_sales"
-colnames(sdcv)[7] <- "last_12_month_sales"
-colnames(sdcv)[65] <- "total_forecast_next_12_months"
+inventory_model[-1:-7, ] -> inventory_model
+colnames(inventory_model) <- inventory_model[1, ]
+inventory_model[-1, ] -> inventory_model
 
-sdcv %>%
-  dplyr::select(3, 6, 7, 65) %>%
-  dplyr::mutate(ref = gsub("-", "_", ref),
-                last_6_month_sales = as.double(last_6_month_sales),
-                last_12_month_sales = as.double(last_12_month_sales),
-                total_forecast_next_12_months = as.double(total_forecast_next_12_months)) -> sdcv
+colnames(inventory_model)[5] <- "ref"
+colnames(inventory_model)[17] <- "mfg_line"
+colnames(inventory_model)[32] <- "max_capacity"
 
-sdcv[-which(duplicated(sdcv$ref)),] -> sdcv
+inventory_model %>% 
+  dplyr::select(ref, mfg_line, max_capacity) %>% 
+  dplyr::mutate(ref = gsub("-", "_", ref)) %>% 
+  dplyr::mutate(max_capacity = as.numeric(max_capacity)) -> inventory_model
+
+
 
 # Campus reference
 campus_ref <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/campus reference.xlsx",
@@ -911,7 +909,8 @@ ssmetrics_final %>%
 ssmetrics_final %>% 
   dplyr::mutate(month = lubridate::month(date),
                 year = lubridate::year(date),
-                FY = paste0("FY", lubridate::year(date)+1)) -> ssmetrics_final
+                FY = paste("FY", lubridate::year(date)+1)) -> ssmetrics_final
+
 
 
 # Macro-platform
@@ -993,30 +992,121 @@ ssmetrics_final %>%
   dplyr::select(-oil_aloc, -oil_aloc_2, -oil_aloc_3) -> ssmetrics_final
   
 
-# mfg_line
+# mfg_line & max capacity
+ssmetrics_final %>% 
+  dplyr::left_join(inventory_model, by = "ref") %>% 
+  dplyr::mutate(mfg_line = replace(mfg_line, is.na(mfg_line), Type)) %>% 
+  dplyr::mutate(max_capacity = replace(max_capacity, is.na(max_capacity), 0)) -> ssmetrics_final
+
+# Capacity Status
+ssmetrics_final %>% 
+  dplyr::mutate(capacity_status = ifelse(Type == "Finished Goods",
+                                         ifelse(max_capacity > 0.85, "Constrained", 
+                                                ifelse(max_capacity < 0.75, "OK", "Check")), Type)) -> ssmetrics_final
+
+
+# max_capacity retouch
+ssmetrics_final %>% 
+  dplyr::mutate(max_capacity = paste0(round(100*max_capacity, 0), "%")) -> ssmetrics_final
+
+
+# month final touch
+ssmetrics_final %>% 
+  dplyr::mutate(month = recode(month, "1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec")) -> ssmetrics_final
+
+## RELOCATING ##
+ssmetrics_final %>% 
+  dplyr::relocate(month, FY, year, Category, Platform, macro_platform, Location_Name, Campus, date, Location, Item, Description, Type,
+                  Stocking_Type_Description, Planner_Name, MTO_MTS, MPF, Safety_Stock, Balance_Usable, Balance_Hold, ref, campus_ref,
+                  Label, mfg_line, max_capacity, capacity_status, current_ss_alert, total_cust_order, cust_order_in_the_next_5_days,
+                  wo_qty_in_the_next_5_days, receipt_qty_in_the_next_5_days, po_qty_in_the_next_5_days, ss_alert_after, Sku_has_ss,
+                  Sku_greater_or_equal_ss, Sku_less_ss, Sku_less_ss_with_supply, priority_sku_unique, oil_allocation,
+                  campus_ss, campus_total_available, campus_Sku_ss, campus_Sku_greater_equal_ss, campus_Sku_less_ss) -> ssmetrics_final
 
 
 
 
-# What to do here..
-# figure out with 3 columns with red highlight  (xlsb files in the automation - sdcv model.. make sure if I read it correctly first)
-# relocate the columns
-# rename the columns
-# Line 720 ~ 750 still needs to be figured
-# after all that, let's test if I can upload the mega date to Micro
-
-
-
-##### weekly result #####
+##### weekly result ##### ----
 writexl::write_xlsx(ssmetrics_final, "SS Metrics 0620.xlsx") 
 
 
 
 
+#####################################################################################################################################
+###################################################### save & update mega data ######################################################
+#####################################################################################################################################
+colnames(ssmetrics_mainboard) <- colnames(ssmetrics_final)
 
-############ save & update mega data ###############
-str(ssmetrics_final)
-str(ssmetrics_mainboard)
+ssmetrics_mainboard %>% 
+  dplyr::mutate(date = as.integer(date),
+                date = as.Date(date, origin = "1899-12-30")) -> ssmetrics_mainboard
+
+readr::type_convert(ssmetrics_mainboard) -> ssmetrics_mainboard
+
+# Check the first line to see the earliest day of the data ----
+ssmetrics_mainboard %>% head()
+
+ssmetrics_mainboard %>% 
+  dplyr::filter(date != "2021-06-21") %>% 
+  dplyr::mutate(Safety_Stock = as.double(Safety_Stock)) %>% 
+  dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
+
+
+
+colnames(ssmetrics_mainboard)	[	1	]	<-	"Month"
+colnames(ssmetrics_mainboard)	[	2	]	<-	"FY"
+colnames(ssmetrics_mainboard)	[	3	]	<-	"Year"
+colnames(ssmetrics_mainboard)	[	4	]	<-	"Category"
+colnames(ssmetrics_mainboard)	[	5	]	<-	"Platform"
+colnames(ssmetrics_mainboard)	[	6	]	<-	"Macro-Platform"
+colnames(ssmetrics_mainboard)	[	7	]	<-	"Loc Name"
+colnames(ssmetrics_mainboard)	[	8	]	<-	"Campus"
+colnames(ssmetrics_mainboard)	[	9	]	<-	"Date"
+colnames(ssmetrics_mainboard)	[	10	]	<-	"Location"
+colnames(ssmetrics_mainboard)	[	11	]	<-	"Item"
+colnames(ssmetrics_mainboard)	[	12	]	<-	"Description"
+colnames(ssmetrics_mainboard)	[	13	]	<-	"Type"
+colnames(ssmetrics_mainboard)	[	14	]	<-	"Stocking type description"
+colnames(ssmetrics_mainboard)	[	15	]	<-	"Planner Name"
+colnames(ssmetrics_mainboard)	[	16	]	<-	"MTO/MTS"
+colnames(ssmetrics_mainboard)	[	17	]	<-	"MPF/Line#"
+colnames(ssmetrics_mainboard)	[	18	]	<-	"SafetyStock"
+colnames(ssmetrics_mainboard)	[	19	]	<-	"BalanceUsable"	
+colnames(ssmetrics_mainboard)	[	20	]	<-	"Sum of BalanceHold(exclude hard hold)"
+colnames(ssmetrics_mainboard)	[	21	]	<-	"Ref"
+colnames(ssmetrics_mainboard)	[	22	]	<-	"Campus Ref"
+colnames(ssmetrics_mainboard)	[	23	]	<-	"Label"
+colnames(ssmetrics_mainboard)	[	24	]	<-	"mfg-line"
+colnames(ssmetrics_mainboard)	[	25	]	<-	"Capacity"
+colnames(ssmetrics_mainboard)	[	26	]	<-	"Capacity Status"
+colnames(ssmetrics_mainboard)	[	27	]	<-	"Current SS Alert"
+colnames(ssmetrics_mainboard)	[	28	]	<-	"Total Cust Order"
+colnames(ssmetrics_mainboard)	[	29	]	<-	"Cust Order qty in the next 5 days"
+colnames(ssmetrics_mainboard)	[	30	]	<-	"WO in next 5 days"
+colnames(ssmetrics_mainboard)	[	31	]	<-	"Receipt in next 5 days"
+colnames(ssmetrics_mainboard)	[	32	]	<-	"Open PO in next 5 days"
+colnames(ssmetrics_mainboard)	[	33	]	<-	"SS Alert after Cust Order in the next 5 days + WO & Receipt"
+colnames(ssmetrics_mainboard)	[	34	]	<-	"SKU has SS"
+colnames(ssmetrics_mainboard)	[	35	]	<-	"SKU >= SS"
+colnames(ssmetrics_mainboard)	[	36	]	<-	"SKU < SS"
+colnames(ssmetrics_mainboard)	[	37	]	<-	"SKU < SS with supply"
+colnames(ssmetrics_mainboard)	[	38	]	<-	"Priority SKU or Unique RM"
+colnames(ssmetrics_mainboard)	[	39	]	<-	"Oil Allocation SKU"
+colnames(ssmetrics_mainboard)	[	40	]	<-	"Campus SS"
+colnames(ssmetrics_mainboard)	[	41	]	<-	"Campus Total Available"
+colnames(ssmetrics_mainboard)	[	42	]	<-	"Campus SKU has SS"
+colnames(ssmetrics_mainboard)	[	43	]	<-	"Campus SKU >= SS"
+colnames(ssmetrics_mainboard)	[	44	]	<-	"Campus SKU < SS"
+
+
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard_7_12_22.rds")
+
+
+
+
+# Still need to do line (784 ~ 814) for a new items. 
+# Trying Micro if I can upload this
+writexl::write_xlsx(ssmetrics_mainboard, "SS Metrics_mainboard_7_12_22.xlsx") 
 
 
 
