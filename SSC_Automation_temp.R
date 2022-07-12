@@ -9,7 +9,8 @@ library(skimr)
 # ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/ssmetrics_main_board.xlsx",
 #                          col_names = FALSE)
 
-load("ssmetrics_mainboard.rds")
+# load main board (mega data) ----
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard.rds")
 
 colnames(ssmetrics_mainboard) <- ssmetrics_mainboard[1, ]
 ssmetrics_mainboard[-1, ] -> ssmetrics_mainboard
@@ -38,8 +39,8 @@ colnames(ssmetrics_mainboard)[22] <- "campus_ref"
 
 
 ############################### Phase 1 ############################
-# Stock type
-load("stock_type.rds")
+# Stock type ----
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/stock_type.rds")
 
 # Macro-platform (change this only when there's a change) ----
 macro_platform <- read_excel("S:/Supply Chain Projects/RStudio/Macro-platform.xlsx",
@@ -1043,70 +1044,85 @@ ssmetrics_mainboard %>%
 
 readr::type_convert(ssmetrics_mainboard) -> ssmetrics_mainboard
 
+ssmetrics_mainboard %>% 
+  dplyr::mutate(max_capacity = replace(max_capacity, is.na(max_capacity), 0)) %>% 
+  dplyr::mutate(max_capacity = paste0(round(100*max_capacity, 0), "%")) %>% 
+  dplyr::mutate(Safety_Stock = as.double(Safety_Stock)) -> ssmetrics_mainboard
+
+
+
 # Check the first line to see the earliest day of the data ----
 ssmetrics_mainboard %>% head()
 
 ssmetrics_mainboard %>% 
   dplyr::filter(date != "2021-06-21") %>% 
-  dplyr::mutate(Safety_Stock = as.double(Safety_Stock)) %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
 
-colnames(ssmetrics_mainboard)	[	1	]	<-	"Month"
-colnames(ssmetrics_mainboard)	[	2	]	<-	"FY"
-colnames(ssmetrics_mainboard)	[	3	]	<-	"Year"
-colnames(ssmetrics_mainboard)	[	4	]	<-	"Category"
-colnames(ssmetrics_mainboard)	[	5	]	<-	"Platform"
-colnames(ssmetrics_mainboard)	[	6	]	<-	"Macro-Platform"
-colnames(ssmetrics_mainboard)	[	7	]	<-	"Loc Name"
-colnames(ssmetrics_mainboard)	[	8	]	<-	"Campus"
-colnames(ssmetrics_mainboard)	[	9	]	<-	"Date"
-colnames(ssmetrics_mainboard)	[	10	]	<-	"Location"
-colnames(ssmetrics_mainboard)	[	11	]	<-	"Item"
-colnames(ssmetrics_mainboard)	[	12	]	<-	"Description"
-colnames(ssmetrics_mainboard)	[	13	]	<-	"Type"
-colnames(ssmetrics_mainboard)	[	14	]	<-	"Stocking type description"
-colnames(ssmetrics_mainboard)	[	15	]	<-	"Planner Name"
-colnames(ssmetrics_mainboard)	[	16	]	<-	"MTO/MTS"
-colnames(ssmetrics_mainboard)	[	17	]	<-	"MPF/Line#"
-colnames(ssmetrics_mainboard)	[	18	]	<-	"SafetyStock"
-colnames(ssmetrics_mainboard)	[	19	]	<-	"BalanceUsable"	
-colnames(ssmetrics_mainboard)	[	20	]	<-	"Sum of BalanceHold(exclude hard hold)"
-colnames(ssmetrics_mainboard)	[	21	]	<-	"Ref"
-colnames(ssmetrics_mainboard)	[	22	]	<-	"Campus Ref"
-colnames(ssmetrics_mainboard)	[	23	]	<-	"Label"
-colnames(ssmetrics_mainboard)	[	24	]	<-	"mfg-line"
-colnames(ssmetrics_mainboard)	[	25	]	<-	"Capacity"
-colnames(ssmetrics_mainboard)	[	26	]	<-	"Capacity Status"
-colnames(ssmetrics_mainboard)	[	27	]	<-	"Current SS Alert"
-colnames(ssmetrics_mainboard)	[	28	]	<-	"Total Cust Order"
-colnames(ssmetrics_mainboard)	[	29	]	<-	"Cust Order qty in the next 5 days"
-colnames(ssmetrics_mainboard)	[	30	]	<-	"WO in next 5 days"
-colnames(ssmetrics_mainboard)	[	31	]	<-	"Receipt in next 5 days"
-colnames(ssmetrics_mainboard)	[	32	]	<-	"Open PO in next 5 days"
-colnames(ssmetrics_mainboard)	[	33	]	<-	"SS Alert after Cust Order in the next 5 days + WO & Receipt"
-colnames(ssmetrics_mainboard)	[	34	]	<-	"SKU has SS"
-colnames(ssmetrics_mainboard)	[	35	]	<-	"SKU >= SS"
-colnames(ssmetrics_mainboard)	[	36	]	<-	"SKU < SS"
-colnames(ssmetrics_mainboard)	[	37	]	<-	"SKU < SS with supply"
-colnames(ssmetrics_mainboard)	[	38	]	<-	"Priority SKU or Unique RM"
-colnames(ssmetrics_mainboard)	[	39	]	<-	"Oil Allocation SKU"
-colnames(ssmetrics_mainboard)	[	40	]	<-	"Campus SS"
-colnames(ssmetrics_mainboard)	[	41	]	<-	"Campus Total Available"
-colnames(ssmetrics_mainboard)	[	42	]	<-	"Campus SKU has SS"
-colnames(ssmetrics_mainboard)	[	43	]	<-	"Campus SKU >= SS"
-colnames(ssmetrics_mainboard)	[	44	]	<-	"Campus SKU < SS"
+
+
 
 
 save(ssmetrics_mainboard, file = "ssmetrics_mainboard_7_12_22.rds")
 
 
-
-
-# Still need to do line (784 ~ 814) for a new items. 
-# Trying Micro if I can upload this
 writexl::write_xlsx(ssmetrics_mainboard, "SS Metrics_mainboard_7_12_22.xlsx") 
 
 
 
+
+# Still need to do line (784 ~ 814) for a new items. 
+
+
+
+
+
+
+
+
+
+# colnames(ssmetrics_mainboard)[1]	<-	"Month"
+# colnames(ssmetrics_mainboard)[2]	<-	"FY"
+# colnames(ssmetrics_mainboard)[3]	<-	"Year"
+# colnames(ssmetrics_mainboard)[4]	<-	"Category"
+# colnames(ssmetrics_mainboard)[5]	<-	"Platform"
+# colnames(ssmetrics_mainboard)[6]	<-	"Macro-Platform"
+# colnames(ssmetrics_mainboard)[7]	<-	"Loc Name"
+# colnames(ssmetrics_mainboard)[8]	<-	"Campus"
+# colnames(ssmetrics_mainboard)[9]	<-	"Date"
+# colnames(ssmetrics_mainboard)[10]	<-	"Location"
+# colnames(ssmetrics_mainboard)[11]	<-	"Item"
+# colnames(ssmetrics_mainboard)[12]	<-	"Description"
+# colnames(ssmetrics_mainboard)[13]	<-	"Type"
+# colnames(ssmetrics_mainboard)[14]	<-	"Stocking type description"
+# colnames(ssmetrics_mainboard)[15]	<-	"Planner Name"
+# colnames(ssmetrics_mainboard)[16]	<-	"MTO/MTS"
+# colnames(ssmetrics_mainboard)[17]	<-	"MPF/Line#"
+# colnames(ssmetrics_mainboard)[18]	<-	"SafetyStock"
+# colnames(ssmetrics_mainboard)[19]	<-	"BalanceUsable"	
+# colnames(ssmetrics_mainboard)[20]	<-	"Sum of BalanceHold(exclude hard hold)"
+# colnames(ssmetrics_mainboard)[21]	<-	"Ref"
+# colnames(ssmetrics_mainboard)[22]	<-	"Campus Ref"
+# colnames(ssmetrics_mainboard)[23]	<-	"Label"
+# colnames(ssmetrics_mainboard)[24]	<-	"mfg-line"
+# colnames(ssmetrics_mainboard)[25]	<-	"Capacity"
+# colnames(ssmetrics_mainboard)[26]	<-	"Capacity Status"
+# colnames(ssmetrics_mainboard)[27]	<-	"Current SS Alert"
+# colnames(ssmetrics_mainboard)[28]	<-	"Total Cust Order"
+# colnames(ssmetrics_mainboard)[29]	<-	"Cust Order qty in the next 5 days"
+# colnames(ssmetrics_mainboard)[30]	<-	"WO in next 5 days"
+# colnames(ssmetrics_mainboard)[31]	<-	"Receipt in next 5 days"
+# colnames(ssmetrics_mainboard)[32]	<-	"Open PO in next 5 days"
+# colnames(ssmetrics_mainboard)[33]	<-	"SS Alert after Cust Order in the next 5 days + WO & Receipt"
+# colnames(ssmetrics_mainboard)[34]	<-	"SKU has SS"
+# colnames(ssmetrics_mainboard)[35]	<-	"SKU >= SS"
+# colnames(ssmetrics_mainboard)[36]	<-	"SKU < SS"
+# colnames(ssmetrics_mainboard)[37]	<-	"SKU < SS with supply"
+# colnames(ssmetrics_mainboard)[38]	<-	"Priority SKU or Unique RM"
+# colnames(ssmetrics_mainboard)[39]	<-	"Oil Allocation SKU"
+# colnames(ssmetrics_mainboard)[40]	<-	"Campus SS"
+# colnames(ssmetrics_mainboard)[41]	<-	"Campus Total Available"
+# colnames(ssmetrics_mainboard)[42]	<-	"Campus SKU has SS"
+# colnames(ssmetrics_mainboard)[43]	<-	"Campus SKU >= SS"
+# colnames(ssmetrics_mainboard)[44]	<-	"Campus SKU < SS"
