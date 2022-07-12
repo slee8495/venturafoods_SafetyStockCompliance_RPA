@@ -60,6 +60,29 @@ location_name[-1, ] -> location_name
 location_name %>% 
   dplyr::mutate(Location = as.numeric(Location)) -> location_name
 
+# priority_Sku_uniques (change this only when there's a change) ----
+priority_sku <- read_excel("S:/Supply Chain Projects/RStudio/Priority_Sku_and_uniques.xlsx",
+                             col_names = FALSE)
+
+colnames(priority_sku) <- priority_sku[1, ]
+priority_sku[-1, ] -> priority_sku
+
+colnames(priority_sku)[1] <- "priority_sku"
+
+priority_sku %>% 
+  dplyr::mutate(Item = priority_sku) -> priority_sku
+
+# oil allocation (change this only when there's a change) ----
+oil_aloc <- read_excel("S:/Supply Chain Projects/RStudio/oil allocation.xlsx",
+                           col_names = FALSE)
+
+colnames(oil_aloc) <- oil_aloc[1, ]
+oil_aloc[-1, ] -> oil_aloc
+
+colnames(oil_aloc)[1] <- "Item"
+colnames(oil_aloc)[2] <- "oil_aloc"
+colnames(oil_aloc)[3] <- "comp_desc"
+
 
 
 # Campus reference
@@ -929,14 +952,32 @@ ssmetrics_final %>%
 ssmetrics_final %>% 
   dplyr::mutate(campus_Sku_less_ss = ifelse(campus_ss > campus_total_available, 1, 0)) -> ssmetrics_final
 
+# Priority Sku or unique RM
+priority_sku[-which(duplicated(priority_sku$priority_sku)),] -> priority_sku
+
+ssmetrics_final %>% 
+  dplyr::left_join(priority_sku, by = "Item") %>% 
+  dplyr::mutate(priority_sku_unique = ifelse(is.na(priority_sku), "N", "Y")) %>% 
+  dplyr::select(-priority_sku) -> ssmetrics_final
+
+
+# oil allocation sku
+ssmetrics_final %>% 
+  dplyr::left_join(oil_aloc %>% dplyr::select(1:2), by = "Item") %>% 
+  dplyr::mutate(oil_aloc_2 = ifelse(Type != "Finished Goods", Type, NA)) %>% 
+  dplyr::mutate(oil_aloc_3 = ifelse(is.na(oil_aloc) & is.na(oil_aloc_2), "non oil allocation", NA)) %>% 
+  dplyr::mutate(oil_allocation = oil_aloc,
+                oil_allocation = ifelse(is.na(oil_aloc), oil_aloc_2, oil_aloc),
+                oil_allocation = ifelse(is.na(oil_allocation), oil_aloc_3, oil_allocation)) -> ssmetrics_final
+  
 
 
 
 # What to do here..
-# figure out with 5 columns with red highlight  (xlsb files in the automation)
+# figure out with 3 columns with red highlight  (xlsb files in the automation)
 # relocate the columns
 # rename the columns
-## Line 720 ~ 750 still needs to be figured
+# Line 720 ~ 750 still needs to be figured
 # after all that, let's test if I can upload the mega date to Micro
 
 
