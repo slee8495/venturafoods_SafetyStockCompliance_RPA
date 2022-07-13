@@ -781,14 +781,13 @@ merge(ssmetrics_2, ssmetrics_mainboard_type[, c("Item", "Type")], by = "Item", a
 
 rbind(ssmetrics, ssmetrics_2) -> ssmetrics
 
-
-
-
+#####################################################
 # what if still N/A? that's new items
 
 # this is where you will need to read Micro Strategy from Linda's access grant
 types_for_na <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/.xlsx",
                            col_names = FALSE)
+
 
 
 
@@ -803,7 +802,32 @@ ssmetrics_mainboard_cat[!duplicated(ssmetrics_mainboard_cat[,c("Item", "Category
 ssmetrics_mainboard_cat[-which(duplicated(ssmetrics_mainboard_cat$Item)),] -> ssmetrics_mainboard_cat
 
 merge(ssmetrics, ssmetrics_mainboard_cat[, c("Item", "Category")], by = "Item", all.x = TRUE) -> ssmetrics  
-# here you have N/A for new SKUs. need MS
+
+# here you have N/A for new SKUs. need MS ----
+category_platform_for_new <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Category and Platform and pack size.xlsx",
+                                        col_names = FALSE)
+
+category_platform_for_new[-1:-2, ] -> category_platform_for_new
+colnames(category_platform_for_new) <- category_platform_for_new[1, ]
+category_platform_for_new[-1, ] -> category_platform_for_new
+
+category_platform_for_new %>% 
+  dplyr::select(1,2,8,9) -> category_platform_for_new
+
+
+colnames(category_platform_for_new)[1] <- "Location"
+colnames(category_platform_for_new)[2] <- "Item"
+colnames(category_platform_for_new)[3] <- "Category"
+colnames(category_platform_for_new)[4] <- "Platform"
+
+
+category_platform_for_new %>% 
+  dplyr::mutate(Item = gsub("-", "", Item)) %>% 
+  dplyr::select(Item, Category) -> category_for_new
+category_for_new[-which(duplicated(category_for_new$Item)),] -> category_for_new
+
+ssmetrics %>% 
+  dplyr::mutate(Category = ifelse(Category == is.na(Category), left_join(category_for_new, by = "Item"), Category)) -> ssmetrics
 
 
 # Platform vlookup from mega data
@@ -814,9 +838,16 @@ ssmetrics_mainboard_plat[!duplicated(ssmetrics_mainboard_plat[,c("Item", "Platfo
 ssmetrics_mainboard_plat[-which(duplicated(ssmetrics_mainboard_plat$Item)),] -> ssmetrics_mainboard_plat
 
 merge(ssmetrics, ssmetrics_mainboard_plat[, c("Item", "Platform")], by = "Item", all.x = TRUE) -> ssmetrics  
+
 # here you have N/A for new SKUs. need MS
+category_platform_for_new %>% 
+  dplyr::mutate(Item = gsub("-", "", Item)) %>% 
+  dplyr::select(Item, Platform) -> platform_for_new
+platform_for_new[-which(duplicated(platform_for_new$Item)),] -> platform_for_new
 
-
+ssmetrics %>% 
+  dplyr::mutate(Platform = ifelse(Platform == is.na(Platform), left_join(platform_for_new, by = "Item"), Platform)) -> ssmetrics
+#####################################################
 
 
 # Pivot Hold Qty
