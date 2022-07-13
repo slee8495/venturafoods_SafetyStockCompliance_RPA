@@ -1066,8 +1066,13 @@ ssmetrics_final %>%
 
 
 ##### weekly result ##### ----
-writexl::write_xlsx(ssmetrics_final, "SS Metrics 0620.xlsx") 
+ssmetrics_final -> ssmetrics_final_2
+ssmetrics_final_2 %>% 
+  dplyr::mutate(ref = gsub("_", "-", ref),
+                campus_ref = gsub("_", "-", campus_ref),
+                date = format(as.Date(date), "%m/%d/%y")) -> ssmetrics_final_2
 
+writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0620.xlsx") 
 
 
 
@@ -1098,7 +1103,10 @@ ssmetrics_mainboard %>%
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
-
+ssmetrics_mainboard %>% 
+  dplyr::mutate(ref = gsub("_", "-", ref),
+                campus_ref = gsub("_", "-", campus_ref),
+                date = format(as.Date(date), "%m/%d/%y")) -> ssmetrics_mainboard
 
 
 
