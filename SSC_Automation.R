@@ -6,6 +6,9 @@ library(writexl)
 library(reshape2)
 library(skimr)
 
+### ** For NA values in "Type", "Category", "Platform" -> they are new Items. look up yourself to verify ** ##
+
+
 # ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/ssmetrics_main_board.xlsx",
 #                          col_names = FALSE)
 
@@ -782,17 +785,6 @@ merge(ssmetrics_2, ssmetrics_mainboard_type[, c("Item", "Type")], by = "Item", a
 rbind(ssmetrics, ssmetrics_2) -> ssmetrics
 
 #####################################################
-# what if still N/A? that's new items
-
-# this is where you will need to read Micro Strategy from Linda's access grant
-types_for_na <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/.xlsx",
-                           col_names = FALSE)
-
-
-
-
-
-
 
 # Categories vlookup from mega data
 ssmetrics_mainboard %>% 
