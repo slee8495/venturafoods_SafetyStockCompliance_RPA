@@ -6,8 +6,6 @@ library(writexl)
 library(reshape2)
 library(skimr)
 
-# I added this. 
-
 ### ** For NA values in "Type", "Category", "Platform" -> they are new Items. look up yourself to verify ** ##
 
 
