@@ -11,7 +11,9 @@ library(skimr)
 
 # ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/megadata.7.11.22.xlsx",
 #                         col_names = FALSE)
-save(ssmetrics_mainboard, file = "ssmetrics_megadata.7.11.22.rds")
+# save(ssmetrics_mainboard, file = "ssmetrics_megadata.7.11.22.rds")
+
+
 # load main board (mega data) ----
 load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard.rds")
 
