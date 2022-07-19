@@ -760,7 +760,6 @@ ssmetrics %>%
 
 # MTO - 4
 ssmetrics %>% 
-  dplyr::filter(MTO_MTS == 4) %>% 
   dplyr::filter(Type %in% c("Finished Goods", "Ingredients", "Label", "Packaging")) -> ssmetrics
 
 ssmetrics %>% 
@@ -1045,7 +1044,9 @@ ssmetrics_final %>%
                   Sku_greater_or_equal_ss, Sku_less_ss, Sku_less_ss_with_supply, priority_sku_unique, oil_allocation,
                   campus_ss, campus_total_available, campus_Sku_ss, campus_Sku_greater_equal_ss, campus_Sku_less_ss) -> ssmetrics_final
 
-
+# Final Touch
+ssmetrics_final %>% 
+  dplyr::filter(MTO_MTS == 4) -> ssmetrics_final
 
 
 ##### weekly result ##### ----
