@@ -140,7 +140,7 @@ Lot_Status %>%
   dplyr::select(Lot_Status, Hold_Status) -> Lot_Status
 
 # previous SS_Metrics file ----
-ssmetrics_pre <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Copy of Safety Stock Compliance Report Data v3 - 06.20.22.xlsx",
+ssmetrics_pre <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Copy of Safety Stock Compliance Report Data v3 - 07.11.22.xlsx",
                              col_names = FALSE)
 
 ssmetrics_pre[-1, ] -> ssmetrics_pre
@@ -380,66 +380,69 @@ colnames(JDOH)[12] <- "Planner_Name"
 readr::type_convert(JDOH) -> JDOH
 
 JDOH %>% 
-  dplyr::filter(Location != 86 & Location!= 226 & Location != 381) %>% 
+  dplyr::filter(Location != 86 & Location!= 226) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref) -> JDOH
-
-
-# Inventory Analysis for all locations ----
-Inv_FG <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Report for all locations - 07.18.22.xlsx", 
-                     sheet = "FG", col_names = FALSE)
-
-Inv_RM <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Report for all locations - 07.18.22.xlsx", 
-                     sheet = "RM", col_names = FALSE)
-
-
-Inv_FG[-1:-3, ] -> Inv_FG
-Inv_RM[-1:-2, ] -> Inv_RM
-
-colnames(Inv_RM) <- Inv_RM[1, ]
-Inv_RM[-1, ] -> Inv_RM
-
-colnames(Inv_RM)[2] <- "Location_Name"
-colnames(Inv_RM)[5] <- "Description"
-
-names(Inv_RM) <- str_replace_all(names(Inv_RM), c(" " = "_"))
-
-colnames(Inv_FG)[1] <- "Location"
-colnames(Inv_FG)[2] <- "Location_Name"
-colnames(Inv_FG)[3] <- "Campus"
-colnames(Inv_FG)[4] <- "Item"
-colnames(Inv_FG)[5] <- "Description"
-colnames(Inv_FG)[6] <- "Inventory_Status_Code"
-colnames(Inv_FG)[7] <- "Hold_Status"
-colnames(Inv_FG)[8] <- "Current_Inventory_Balance"
-
-dplyr::bind_rows(Inv_RM, Inv_FG) -> Inv_all
-
-Inv_all %>% 
-  dplyr::mutate(Item = gsub("-", "", Item)) %>% 
-  dplyr::mutate(ref = paste0(Location, "_", Item),
-                mfg_ref = paste0(Campus, "_", Item)) %>% 
-  dplyr::relocate(ref, mfg_ref) -> Inv_all
-
-readr::type_convert(Inv_all) -> Inv_all
-
-Inv_all %>% 
-  dplyr::mutate(item_length = nchar(Item)) -> Inv_all
-
-Inv_all %>% filter(item_length == 8) -> fg 
-Inv_all %>% filter(item_length == 5 | item_length == 9) -> rm
-
-rm %>% 
-  dplyr::mutate(Item = sub("^0+", "", Item)) -> rm
-
-rbind(rm, fg) -> Inv_all
-Inv_all %>% 
-  dplyr::select(-item_length) -> Inv_all
 
 
 ############################################################################################################################
 ########################### From here, This should be activated after two locations are resolved ###########################
 ############################################################################################################################
+
+# # Inventory Analysis for all locations ----
+# Inv_FG <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Report for all locations - 07.18.22.xlsx", 
+#                      sheet = "FG", col_names = FALSE)
+# 
+# Inv_RM <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Report for all locations - 07.18.22.xlsx", 
+#                      sheet = "RM", col_names = FALSE)
+# 
+# 
+# Inv_FG[-1:-3, ] -> Inv_FG
+# Inv_RM[-1:-2, ] -> Inv_RM
+# 
+# colnames(Inv_RM) <- Inv_RM[1, ]
+# Inv_RM[-1, ] -> Inv_RM
+# 
+# colnames(Inv_RM)[2] <- "Location_Name"
+# colnames(Inv_RM)[5] <- "Description"
+# 
+# names(Inv_RM) <- str_replace_all(names(Inv_RM), c(" " = "_"))
+# 
+# colnames(Inv_FG)[1] <- "Location"
+# colnames(Inv_FG)[2] <- "Location_Name"
+# colnames(Inv_FG)[3] <- "Campus"
+# colnames(Inv_FG)[4] <- "Item"
+# colnames(Inv_FG)[5] <- "Description"
+# colnames(Inv_FG)[6] <- "Inventory_Status_Code"
+# colnames(Inv_FG)[7] <- "Hold_Status"
+# colnames(Inv_FG)[8] <- "Current_Inventory_Balance"
+# 
+# dplyr::bind_rows(Inv_RM, Inv_FG) -> Inv_all
+# 
+# Inv_all %>% 
+#   dplyr::mutate(Item = gsub("-", "", Item)) %>% 
+#   dplyr::mutate(ref = paste0(Location, "_", Item),
+#                 mfg_ref = paste0(Campus, "_", Item)) %>% 
+#   dplyr::relocate(ref, mfg_ref) -> Inv_all
+# 
+# readr::type_convert(Inv_all) -> Inv_all
+# 
+# Inv_all %>% 
+#   dplyr::mutate(item_length = nchar(Item)) -> Inv_all
+# 
+# Inv_all %>% filter(item_length == 8) -> fg 
+# Inv_all %>% filter(item_length == 5 | item_length == 9) -> rm
+# 
+# rm %>% 
+#   dplyr::mutate(Item = sub("^0+", "", Item)) -> rm
+# 
+# rbind(rm, fg) -> Inv_all
+# Inv_all %>% 
+#   dplyr::select(-item_length) -> Inv_all
+
+
+
+
 
 # Inv_all %>%
 #   reshape2::dcast(Location + Item + Description ~ Hold_Status, value.var = "Current_Inventory_Balance", sum) %>%
@@ -543,12 +546,23 @@ Inv_all %>%
 # ###############################################################################################################################
 # 
 # Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
-Inv_cassandra <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Analysis - 07.18.22.xlsx",
-                            col_names = FALSE)
+Inv_cassandra_fg <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Analysis - 07.18.22.xlsx",
+                            sheet = "FG", col_names = FALSE)
 
-Inv_cassandra[-1:-2, ] -> Inv_cassandra
-colnames(Inv_cassandra) <- Inv_cassandra[1, ]
-Inv_cassandra[-1, c(2:5, 13:14, 24)] -> Inv_cassandra
+Inv_cassandra_rm <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Analysis - 07.18.22.xlsx",
+                            sheet = "RM", col_names = FALSE)
+
+Inv_cassandra_fg[-1:-2, ] -> Inv_cassandra_fg
+colnames(Inv_cassandra_fg) <- Inv_cassandra_fg[1, ]
+Inv_cassandra_fg[-1, c(1,2,3,5,6,7,10)] -> Inv_cassandra_fg
+str(Inv_cassandra_fg)
+
+Inv_cassandra_rm[-1:-2, ] -> Inv_cassandra_rm
+colnames(Inv_cassandra_rm) <- Inv_cassandra_rm[1, ]
+Inv_cassandra_rm[-1, c(1,2,3,5,6,7,10)] -> Inv_cassandra_rm
+
+### Here, you take only what you need and then keep going. 
+dplyr::bind_rows(Inv_cassandra_fg, Inv_cassandra_rm) -> Inv_cassandra
 
 Location_temp <- 226
 campus_temp <- 86
@@ -556,6 +570,7 @@ tibble(Location_temp, campus_temp) -> loc226_campus
 loc226_campus %>%
   dplyr::rename(Location = Location_temp,
                 Campus = campus_temp) -> loc226_campus
+
 
 Inv_cassandra %>%
   dplyr::filter(Location == "226" | Location == "86") %>%
@@ -568,11 +583,9 @@ Inv_cassandra %>%
                 Current_Inventory_Balance = "Inventory Qty (Cases)") %>%
   dplyr::mutate(Item = gsub("-", "", Item),
                 ref = paste0(Location, "_", Item),
-                mfg_ref = paste0(Campus, "_", Item)) %>%
-  dplyr::relocate(ref, mfg_ref, Location, Location_Name, Campus, Item, Description, Inventory_Status_Code,
-                  Hold_Status, Current_Inventory_Balance) -> Inv_cassandra
+                mfg_ref = paste0(Campus, "_", Item)) -> Inv_cassandra
 
-rbind(Inv_all, Inv_cassandra) -> Inv_all
+Inv_cassandra -> Inv_all
 
 
 readr::type_convert(Inv_all) -> Inv_all
