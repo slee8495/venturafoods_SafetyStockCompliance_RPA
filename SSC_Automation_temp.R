@@ -15,7 +15,7 @@ library(skimr)
 
 
 # load main board (mega data) ----
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard.rds")
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/ssmetrics_megadata.7.11.22.rds")
 
 colnames(ssmetrics_mainboard) <- ssmetrics_mainboard[1, ]
 ssmetrics_mainboard[-1, ] -> ssmetrics_mainboard
@@ -91,8 +91,9 @@ colnames(oil_aloc)[3] <- "comp_desc"
 
 
 # Inventory Model  (Make sure to remove the password of the original .xlsx file) ----
+# Make sure with the password
 
-inventory_model <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/SS Optimization by Location - Finished Goods July 2022.xlsx",
+inventory_model <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/SS Optimization by Location - Finished Goods July 2022.xlsx",
                               col_names = FALSE, sheet = "Fin Goods")
 
 inventory_model[-1:-7, ] -> inventory_model
@@ -162,7 +163,7 @@ Planner_address %>%
   dplyr::select(1:2) -> Planner_address
 
 # JDE VF Item Branch - Work with Item Branch ----
-JD_item_branch <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/86, 226, 381 Sheet 4 - Copy.xlsx",
+JD_item_branch <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/JDE item branch.xlsx",
                              col_names = FALSE)
 
 colnames(JD_item_branch) <- JD_item_branch[1, ]
@@ -181,18 +182,12 @@ JD_item_branch %>%
   dplyr::mutate(ref = paste0(Location, "_", Item)) -> JD_item_branch
 
 # exception report ----
-exception_report <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/exception report 06.20.22 - Copy.xlsx", 
-                               sheet = "Sheet1",
-                               col_types = c("text", "text", "text", 
-                                             "text", "numeric", "text", "text", "text", 
-                                             "text", "text", "text", "text", "text", 
-                                             "text", "numeric", "numeric", "numeric", 
-                                             "numeric", "numeric", "numeric", 
-                                             "numeric", "text", "text", "text", 
-                                             "text", "text", "text", "text", "numeric", 
-                                             "text", "text", "text"))
+exception_report <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/exception report 07.18.22.xlsx", 
+                               sheet = "Sheet1")
 
-exception_report[-1:-2, -32] -> exception_report
+readr::type_convert(exception_report) -> exception_report
+
+exception_report[-1:-2, ] -> exception_report
 
 colnames(exception_report) <- exception_report[1, ]
 exception_report[-1, ] -> exception_report
@@ -239,7 +234,7 @@ exception_report %<>%
 
 # custord custord ----
 # Open Customer Order File pulling ----  Change Directory ----
-custord <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/wo receipt custord po - 06.20.22 - Copy.xlsx", 
+custord <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/wo receipt custord po - 07.18.22.xlsx", 
                       sheet = "custord", col_names = FALSE)
 
 
@@ -270,7 +265,7 @@ reshape2::dcast(custord, ref ~ in_next_7_days, value.var = "Qty", sum) %>%
 
 
 # Custord wo ----
-wo <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/wo receipt custord po - 06.20.22 - Copy.xlsx", 
+wo <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/wo receipt custord po - 07.18.22.xlsx", 
                  sheet = "wo", col_names = FALSE)
 
 
@@ -300,7 +295,7 @@ wo %>%
 
 
 # Custord Receipt ----
-receipt <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/wo receipt custord po - 06.20.22 - Copy.xlsx", 
+receipt <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/wo receipt custord po - 07.18.22.xlsx", 
                       sheet = "receipt", col_names = FALSE)
 
 
@@ -330,7 +325,7 @@ receipt %>%
 
 
 # Custord PO ----
-po <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/wo receipt custord po - 06.20.22 - Copy.xlsx", 
+po <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/wo receipt custord po - 07.18.22.xlsx", 
                  sheet = "po", col_names = FALSE)
 
 po %>% 
@@ -361,7 +356,7 @@ po %>%
 
 
 # JD - OH ----
-JDOH <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Copy of JD_OH_SS_20220620 - Copy.xlsx", 
+JDOH <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Copy of JD_OH_SS_20220718.xlsx", 
                    sheet = "itmbal", col_names = FALSE)
 
 
@@ -391,10 +386,10 @@ JDOH %>%
 
 
 # Inventory Analysis for all locations ----
-Inv_FG <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Inventory Report for all locations - 06.20.22 - Copy.xlsx", 
+Inv_FG <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Report for all locations - 07.18.22.xlsx", 
                      sheet = "FG", col_names = FALSE)
 
-Inv_RM <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Inventory Report for all locations - 06.20.22 - Copy.xlsx", 
+Inv_RM <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Report for all locations - 07.18.22.xlsx", 
                      sheet = "RM", col_names = FALSE)
 
 
@@ -548,7 +543,7 @@ Inv_all %>%
 # ###############################################################################################################################
 # 
 # Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
-Inv_cassandra <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Inventory Analysis (Cassandra) - Copy.xlsx",
+Inv_cassandra <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Analysis - 07.18.22.xlsx",
                             col_names = FALSE)
 
 Inv_cassandra[-1:-2, ] -> Inv_cassandra
@@ -563,7 +558,7 @@ loc226_campus %>%
                 Campus = campus_temp) -> loc226_campus
 
 Inv_cassandra %>%
-  dplyr::filter(Location == "226" | Location == "381") %>%
+  dplyr::filter(Location == "226" | Location == "86") %>%
   dplyr::mutate(Location = as.numeric(Location)) %>%
   dplyr::left_join(loc226_campus, by = "Location") %>%
   dplyr::rename(Item = Sku,
@@ -587,7 +582,7 @@ Inv_all %>%
   reshape2::dcast(Location + Item + Description ~ Hold_Status, value.var = "Current_Inventory_Balance", sum) -> Inv_all_pivot
 
 Inv_all %>%
-  dplyr::filter(Location == 86 | Location == 226 | Location == 381) -> Inv_all_86_226_381
+  dplyr::filter(Location == 86 | Location == 226) -> Inv_all_86_226_381
 
 Inv_all_86_226_381 %>%
   reshape2::dcast(Location + Item + Description ~ Hold_Status, value.var = "Current_Inventory_Balance", sum) -> Inv_all_pivot_86_226_381
@@ -1060,8 +1055,7 @@ ssmetrics_final_2 %>%
                 campus_ref = gsub("_", "-", campus_ref),
                 date = format(as.Date(date), "%m/%d/%y")) -> ssmetrics_final_2
 
-writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0620.xlsx") 
-
+writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0718.xlsx") 
 
 
 
