@@ -562,7 +562,12 @@ colnames(Inv_cassandra_rm) <- Inv_cassandra_rm[1, ]
 Inv_cassandra_rm[-1, c(1,2,3,5,6,7,10)] -> Inv_cassandra_rm
 
 ### Here, you take only what you need and then keep going. 
-dplyr::bind_rows(Inv_cassandra_fg, Inv_cassandra_rm) -> Inv_cassandra
+Inv_cassandra_rm %>% 
+  dplyr::rename(Sku = Product) -> Inv_cassandra_rm
+
+
+rbind(Inv_cassandra_fg, Inv_cassandra_rm) -> Inv_cassandra
+
 
 Location_temp <- 226
 campus_temp <- 86
