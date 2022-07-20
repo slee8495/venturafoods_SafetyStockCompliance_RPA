@@ -14,8 +14,8 @@ library(skimr)
 # save(ssmetrics_mainboard, file = "ssmetrics_megadata.7.11.22.rds")
 
 
-# load main board (mega data) ----
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/ssmetrics_megadata.7.11.22.rds")
+# (Path revision needed) load main board (mega data) ----
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/ssmetrics_mainboard_7_18_22.rds")
 
 colnames(ssmetrics_mainboard) <- ssmetrics_mainboard[1, ]
 ssmetrics_mainboard[-1, ] -> ssmetrics_mainboard
@@ -47,7 +47,7 @@ colnames(ssmetrics_mainboard)[22] <- "campus_ref"
 # Stock type ----
 load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/stock_type.rds")
 
-# Macro-platform (change this only when there's a change) ----
+# (Path revision needed) Macro-platform (change this only when there's a change) ----
 macro_platform <- read_excel("S:/Supply Chain Projects/RStudio/Macro-platform.xlsx",
                              col_names = FALSE)
 
@@ -56,7 +56,7 @@ macro_platform[-1, ] -> macro_platform
 
 colnames(macro_platform)[2] <- "macro_platform"
 
-# Location_Name (change this only when there's a change) ----
+# (Path revision needed) Location_Name (change this only when there's a change) ----
 location_name <- read_excel("S:/Supply Chain Projects/RStudio/Location_Name.xlsx",
                              col_names = FALSE)
 
@@ -66,7 +66,7 @@ location_name[-1, ] -> location_name
 location_name %>% 
   dplyr::mutate(Location = as.numeric(Location)) -> location_name
 
-# priority_Sku_uniques (change this only when there's a change) ----
+# (Path revision needed) priority_Sku_uniques (change this only when there's a change) ----
 priority_sku <- read_excel("S:/Supply Chain Projects/RStudio/Priority_Sku_and_uniques.xlsx",
                              col_names = FALSE)
 
@@ -78,7 +78,7 @@ colnames(priority_sku)[1] <- "priority_sku"
 priority_sku %>% 
   dplyr::mutate(Item = priority_sku) -> priority_sku
 
-# oil allocation (change this only when there's a change) ----
+# (Path revision needed) oil allocation (change this only when there's a change) ----
 oil_aloc <- read_excel("S:/Supply Chain Projects/RStudio/oil allocation.xlsx",
                            col_names = FALSE)
 
@@ -90,7 +90,7 @@ colnames(oil_aloc)[2] <- "oil_aloc"
 colnames(oil_aloc)[3] <- "comp_desc"
 
 
-# Inventory Model  (Make sure to remove the password of the original .xlsx file) ----
+# (Path revision needed) Inventory Model  (Make sure to remove the password of the original .xlsx file) ----
 # Make sure with the password
 
 inventory_model <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/SS Optimization by Location - Finished Goods July 2022.xlsx",
@@ -139,7 +139,7 @@ Lot_Status %>%
                 Hold_Status = "Hard/Soft Hold") %>% 
   dplyr::select(Lot_Status, Hold_Status) -> Lot_Status
 
-# previous SS_Metrics file ----
+# (Path revision needed) previous SS_Metrics file ----
 ssmetrics_pre <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Copy of Safety Stock Compliance Report Data v3 - 07.11.22.xlsx",
                              col_names = FALSE)
 
@@ -150,7 +150,7 @@ names(ssmetrics_pre) <- str_replace_all(names(ssmetrics_pre), c(" " = "_"))
 names(ssmetrics_pre) <- str_replace_all(names(ssmetrics_pre), c("/" = "_"))
 
 
-# Planner_address Change Directory only when you need to ----
+# (Path revision needed) Planner_address Change Directory only when you need to ----
 Planner_address <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/FG/FG test/Address Book - 06.08.22.xlsx", 
                               sheet = "Sheet1", col_types = c("text", 
                                                               "text", "text", "text", "text"))
@@ -162,7 +162,7 @@ colnames(Planner_address)[1] <- "Planner_No"
 Planner_address %>% 
   dplyr::select(1:2) -> Planner_address
 
-# JDE VF Item Branch - Work with Item Branch ----
+# (Path revision needed) JDE VF Item Branch - Work with Item Branch ----
 JD_item_branch <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/JDE item branch.xlsx",
                              col_names = FALSE)
 
@@ -181,7 +181,7 @@ readr::type_convert(JD_item_branch) -> JD_item_branch
 JD_item_branch %>%
   dplyr::mutate(ref = paste0(Location, "_", Item)) -> JD_item_branch
 
-# exception report ----
+# (Path revision needed) exception report ----
 exception_report <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/exception report 07.18.22.xlsx", 
                                sheet = "Sheet1")
 
@@ -232,7 +232,7 @@ exception_report %<>%
   dplyr::relocate(ref) 
 
 
-# custord custord ----
+# (Path revision needed) custord custord ----
 # Open Customer Order File pulling ----  Change Directory ----
 custord <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/wo receipt custord po - 07.18.22.xlsx", 
                       sheet = "custord", col_names = FALSE)
@@ -255,7 +255,7 @@ custord %>%
                 date = as.Date(date)) %>% 
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item),
-                in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date() +7, "Y", "N")) %>% 
+                in_next_7_days = ifelse(date >= Sys.Date()-2 & date < Sys.Date() +7, "Y", "N")) %>% 
   dplyr::relocate(ref, Item, Location, in_next_7_days) -> custord
 
 # Custord pivot
@@ -264,7 +264,7 @@ reshape2::dcast(custord, ref ~ in_next_7_days, value.var = "Qty", sum) %>%
 
 
 
-# Custord wo ----
+# (Path revision needed) Custord wo ----
 wo <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/wo receipt custord po - 07.18.22.xlsx", 
                  sheet = "wo", col_names = FALSE)
 
@@ -285,7 +285,7 @@ wo %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date()+7, "Y", "N") )-> wo
+  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date()-2 & date < Sys.Date()+7, "Y", "N") )-> wo
 
 # wo pivot
 wo %>% 
@@ -294,7 +294,7 @@ wo %>%
 
 
 
-# Custord Receipt ----
+# (Path revision needed) Custord Receipt ----
 receipt <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/wo receipt custord po - 07.18.22.xlsx", 
                       sheet = "receipt", col_names = FALSE)
 
@@ -315,7 +315,7 @@ receipt %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date()+7, "Y", "N") ) -> receipt
+  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date()-2 & date < Sys.Date()+7, "Y", "N") ) -> receipt
 
 
 
@@ -324,7 +324,7 @@ receipt %>%
   reshape2::dcast(ref ~ in_next_7_days, value.var = "Qty", sum) -> receipt_pivot  
 
 
-# Custord PO ----
+# (Path revision needed) Custord PO ----
 po <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/wo receipt custord po - 07.18.22.xlsx", 
                  sheet = "po", col_names = FALSE)
 
@@ -344,7 +344,7 @@ po %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date< Sys.Date() + 7, "Y", "N") ) -> po
+  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date()-2 & date< Sys.Date() + 7, "Y", "N") ) -> po
 
 
 # PO_Pivot 
@@ -355,7 +355,7 @@ po %>%
 
 
 
-# JD - OH ----
+# (Path revision needed) JD - OH ----
 JDOH <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Copy of JD_OH_SS_20220718.xlsx", 
                    sheet = "itmbal", col_names = FALSE)
 
@@ -545,7 +545,7 @@ JDOH %>%
 # ######################################## From here, this should be deactivated after two location resolved ####################
 # ###############################################################################################################################
 # 
-# Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
+# (Path revision needed) Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
 Inv_cassandra_fg <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Analysis - 07.18.22.xlsx",
                             sheet = "FG", col_names = FALSE)
 
@@ -738,7 +738,7 @@ ssmetrics[-1, ] -> ssmetrics
 readr::type_convert(ssmetrics) -> ssmetrics
 
 ssmetrics %>% 
-  dplyr::mutate(date = Sys.Date()) %>% 
+  dplyr::mutate(date = Sys.Date()-2) %>% 
   dplyr::relocate(date, .after = ref) -> ssmetrics
 
 # Type - vlookup
@@ -778,9 +778,6 @@ ssmetrics %>%
 
 # MTO - 4
 ssmetrics %>% 
-  dplyr::filter(Type %in% c("Finished Goods", "Ingredients", "Label", "Packaging")) -> ssmetrics
-
-ssmetrics %>% 
   dplyr::filter(is.na(Type)) -> ssmetrics_2
 
 # Type N/A
@@ -797,6 +794,11 @@ merge(ssmetrics_2, ssmetrics_mainboard_type[, c("Item", "Type")], by = "Item", a
 rbind(ssmetrics, ssmetrics_2) -> ssmetrics
 
 
+ssmetrics %>% 
+  dplyr::filter(Type %in% c("Finished Goods", "Ingredients", "Label", "Packaging", NA)) %>% 
+  dplyr::arrange(Type) -> ssmetrics
+ssmetrics[-which(duplicated(ssmetrics$ref)),] -> ssmetrics
+
 
 #####################################################
 
@@ -809,7 +811,7 @@ ssmetrics_mainboard_cat[-which(duplicated(ssmetrics_mainboard_cat$Item)),] -> ss
 
 merge(ssmetrics, ssmetrics_mainboard_cat[, c("Item", "Category")], by = "Item", all.x = TRUE) -> ssmetrics  
 
-# here you have N/A for new SKUs. need MS ----
+# (Path revision needed) here you have N/A for new SKUs. need MS ----
 category_platform_for_new <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Category and Platform and pack size.xlsx",
                            col_names = FALSE)
 
@@ -1067,7 +1069,7 @@ ssmetrics_final %>%
   dplyr::filter(MTO_MTS == 4) -> ssmetrics_final
 
 
-##### weekly result ##### ----
+# (Path revision needed) #### weekly result ##### ----
 ssmetrics_final -> ssmetrics_final_2
 ssmetrics_final_2 %>% 
   dplyr::mutate(ref = gsub("_", "-", ref),
@@ -1096,11 +1098,12 @@ ssmetrics_mainboard %>%
 
 
 
-# Check the first line to see the earliest day of the data ----
+# (Path revision needed) Check the first line to see the earliest day of the data ----
 ssmetrics_mainboard %>% head()
 
+# (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "2021-06-21") %>% 
+  dplyr::filter(date != "2021-07-05") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
@@ -1111,21 +1114,11 @@ ssmetrics_mainboard %>%
 
 
 
+# (Path revision needed) ----
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard_7_18_22.rds")
 
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard_7_12_22.rds")
-
-
-writexl::write_xlsx(ssmetrics_mainboard, "SS Metrics_mainboard_7_12_22.xlsx") 
-
-
-
-
-# Still need to do line (784 ~ 814) for a new items. 
-
-
-
-
-
+# (Path revision needed) ----
+writexl::write_xlsx(ssmetrics_mainboard, "SS Metrics_mainboard_7_18_22.xlsx") 
 
 
 
