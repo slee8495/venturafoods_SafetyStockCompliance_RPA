@@ -46,7 +46,7 @@ colnames(ssmetrics_mainboard)[22] <- "campus_ref"
 
 ############################### Phase 1 ############################
 # Stock type ----
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/stock_type.rds")
+load("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/venturafoods_SafetyStockCompliance_RPA/rds files/stock_type.rds")
 
 # (Path revision needed) Macro-platform (change this only when there's a change) ----
 macro_platform <- read_excel("S:/Supply Chain Projects/RStudio/Macro-platform.xlsx",
