@@ -256,7 +256,7 @@ custord %>%
                 date = as.Date(date)) %>% 
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item),
-                in_next_7_days = ifelse(date >= Sys.Date()-2 & date < Sys.Date() +7, "Y", "N")) %>% 
+                in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date() +7, "Y", "N")) %>% 
   dplyr::relocate(ref, Item, Location, in_next_7_days) -> custord
 
 # Custord pivot
@@ -286,7 +286,7 @@ wo %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date()-2 & date < Sys.Date()+7, "Y", "N") )-> wo
+  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date()+7, "Y", "N") )-> wo
 
 # wo pivot
 wo %>% 
@@ -316,7 +316,7 @@ receipt %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date()-2 & date < Sys.Date()+7, "Y", "N") ) -> receipt
+  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date()+7, "Y", "N") ) -> receipt
 
 
 
@@ -345,7 +345,7 @@ po %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date()-2 & date< Sys.Date() + 7, "Y", "N") ) -> po
+  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date< Sys.Date() + 7, "Y", "N") ) -> po
 
 
 # PO_Pivot 
@@ -739,7 +739,7 @@ ssmetrics[-1, ] -> ssmetrics
 readr::type_convert(ssmetrics) -> ssmetrics
 
 ssmetrics %>% 
-  dplyr::mutate(date = Sys.Date()-2) %>% 
+  dplyr::mutate(date = Sys.Date()) %>% 
   dplyr::relocate(date, .after = ref) -> ssmetrics
 
 # Type - vlookup
