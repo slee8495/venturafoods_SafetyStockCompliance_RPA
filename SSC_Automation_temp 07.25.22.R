@@ -16,7 +16,7 @@ library(mstrio)
 
 
 # (Path revision needed) load main board (mega data) ----
-load("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_7_18_22.rds")
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_7_18_22.rds")
 
 
 ssmetrics_mainboard %>% 
@@ -28,7 +28,7 @@ readr::type_convert(ssmetrics_mainboard) -> ssmetrics_mainboard
 
 ############################### Phase 1 ############################
 # Stock type ----
-load("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/venturafoods_SafetyStockCompliance_RPA/rds files/stock_type.rds")
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/stock_type.rds")
 
 # (Path revision needed) Macro-platform (change this only when there's a change) ----
 macro_platform <- read_excel("S:/Supply Chain Projects/RStudio/Macro-platform.xlsx",
@@ -76,7 +76,7 @@ colnames(oil_aloc)[3] <- "comp_desc"
 # (Path revision needed) Inventory Model  (Make sure to remove the password of the original .xlsx file) ----
 # Make sure with the password
 
-inventory_model <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/Desktop/SS Optimization by Location - Finished Goods July 2022.xlsx",
+inventory_model <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/SS Optimization by Location - Finished Goods July 2022.xlsx",
                               col_names = FALSE, sheet = "Fin Goods")
 
 inventory_model[-1:-7, ] -> inventory_model
@@ -146,7 +146,7 @@ Planner_address %>%
   dplyr::select(1:2) -> Planner_address
 
 # (Path revision needed) JDE VF Item Branch - Work with Item Branch ----
-JD_item_branch <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/raw data/JDE item branch.xlsx",
+JD_item_branch <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/JDE item branch.xlsx",
                              col_names = FALSE)
 
 colnames(JD_item_branch) <- JD_item_branch[1, ]
@@ -165,7 +165,7 @@ JD_item_branch %>%
   dplyr::mutate(ref = paste0(Location, "_", Item)) -> JD_item_branch
 
 # (Path revision needed) exception report ----
-exception_report <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/exception report 07.25.22.xlsx", 
+exception_report <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/exception report 07.25.22.xlsx", 
                                sheet = "Sheet1")
 
 readr::type_convert(exception_report) -> exception_report
@@ -217,7 +217,7 @@ exception_report %<>%
 
 # (Path revision needed) custord custord ----
 # Open Customer Order File pulling ----  Change Directory ----
-custord <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/raw data/wo receipt custord po - 07.25.22.xlsx", 
+custord <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/wo receipt custord po - 07.25.22.xlsx", 
                       sheet = "custord", col_names = FALSE)
 
 
@@ -248,7 +248,7 @@ reshape2::dcast(custord, ref ~ in_next_7_days, value.var = "Qty", sum) %>%
 
 
 # (Path revision needed) Custord wo ----
-wo <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/raw data/wo receipt custord po - 07.25.22.xlsx", 
+wo <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/wo receipt custord po - 07.25.22.xlsx", 
                  sheet = "wo", col_names = FALSE)
 
 
@@ -278,7 +278,7 @@ wo %>%
 
 
 # (Path revision needed) Custord Receipt ----
-receipt <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/raw data/wo receipt custord po - 07.25.22.xlsx", 
+receipt <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/wo receipt custord po - 07.25.22.xlsx", 
                       sheet = "receipt", col_names = FALSE)
 
 
@@ -308,7 +308,7 @@ receipt %>%
 
 
 # (Path revision needed) Custord PO ----
-po <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/raw data/wo receipt custord po - 07.25.22.xlsx", 
+po <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/wo receipt custord po - 07.25.22.xlsx", 
                  sheet = "po", col_names = FALSE)
 
 po %>% 
@@ -339,7 +339,7 @@ po %>%
 
 
 # (Path revision needed) JD - OH ----
-JDOH <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/raw data/Copy of JD_OH_SS_20220725.xlsx", 
+JDOH <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/Copy of JD_OH_SS_20220725.xlsx", 
                    sheet = "itmbal", col_names = FALSE)
 
 
@@ -529,16 +529,16 @@ JDOH %>%
 # ###############################################################################################################################
 # 
 # (Path revision needed) Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
-Inv_cassandra_fg <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/raw data/Inventory Analysis - 07.25.22.xlsx",
+Inv_cassandra_fg <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/Inventory Analysis - 07.25.22.xlsx",
                                sheet = "FG", col_names = FALSE)
 
-Inv_cassandra_rm <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/raw data/Inventory Analysis - 07.25.22.xlsx",
+Inv_cassandra_rm <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test 2/Inventory Analysis - 07.25.22.xlsx",
                                sheet = "RM", col_names = FALSE)
 
 Inv_cassandra_fg[-1:-2, ] -> Inv_cassandra_fg
 colnames(Inv_cassandra_fg) <- Inv_cassandra_fg[1, ]
 Inv_cassandra_fg[-1, c(1,2,3,5,6,7,10)] -> Inv_cassandra_fg
-str(Inv_cassandra_fg)
+
 
 Inv_cassandra_rm[-1:-2, ] -> Inv_cassandra_rm
 colnames(Inv_cassandra_rm) <- Inv_cassandra_rm[1, ]
@@ -588,20 +588,21 @@ Inv_all %>%
 Inv_all_86_226_381 %>%
   reshape2::dcast(Location + Item + Description ~ Hold_Status, value.var = "Current_Inventory_Balance", sum) -> Inv_all_pivot_86_226_381
 
+names(Inv_all_pivot_86_226_381) <- stringr::str_replace_all(names(Inv_all_pivot_86_226_381), c(" " = "_"))
+
 Inv_all_pivot_86_226_381 %>%
-  dplyr::rename(Balance_Usable = Useable,
-                Hard_Hold = "Hard Hold",
-                Soft_Hold = "Soft Hold") %>%
+  dplyr::rename(Balance_Usable = Useable) %>% 
   dplyr::mutate(Stock_Type = "",
-                Balance_Hold = Hard_Hold + Soft_Hold,
                 Lot_Status = "",
                 On_Hand = "",
                 Safety_Stock = "",
                 GL_Class = "",
                 Planner_No = "",
                 Planner_Name = "",
-                ref = paste0(Location, "_", Item)) %>%
-  dplyr::select(-Hard_Hold, -Soft_Hold) %>%
+                ref = paste0(Location, "_", Item),
+                Balance_Hold = rowSums(across(.cols = ends_with("Hold")))) %>% 
+  dplyr::select(-starts_with("Hard")) %>% 
+  dplyr::select(-starts_with("Soft")) %>% 
   dplyr::relocate(Location, Item, Stock_Type, Description, Balance_Usable, Balance_Hold)  -> Inv_all_pivot_86_226_381_for_JDOH
 
 # Inv_all_pivot_86_226_381_for_JDOH - Lot Status
@@ -795,7 +796,7 @@ ssmetrics_mainboard_cat[-which(duplicated(ssmetrics_mainboard_cat$Item)),] -> ss
 merge(ssmetrics, ssmetrics_mainboard_cat[, c("Item", "Category")], by = "Item", all.x = TRUE) -> ssmetrics  
 
 # (Path revision needed) here you have N/A for new SKUs. need MS ----
-category_platform_for_new <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/Product Category Platform - 07.20.22.xlsx",
+category_platform_for_new <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/raw/Category and Platform and pack size.xlsx",
                                         col_names = FALSE)
 
 category_platform_for_new[-1:-2, ] -> category_platform_for_new
@@ -1066,34 +1067,27 @@ writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0725.xlsx")
 #####################################################################################################################################
 ###################################################### save & update mega data ######################################################
 #####################################################################################################################################
-colnames(ssmetrics_mainboard) <- colnames(ssmetrics_final)
+ssmetrics_final %>% 
+  dplyr::mutate(date = format(as.Date(date), "%m/%d/%y")) -> ssmetrics_final
 
-ssmetrics_mainboard %>% 
-  dplyr::mutate(date = as.integer(date),
-                date = as.Date(date, origin = "1899-12-30")) -> ssmetrics_mainboard
+colnames(ssmetrics_mainboard) <- colnames(ssmetrics_final)
 
 readr::type_convert(ssmetrics_mainboard) -> ssmetrics_mainboard
 
-ssmetrics_mainboard %>% 
-  dplyr::mutate(max_capacity = replace(max_capacity, is.na(max_capacity), 0)) %>% 
-  dplyr::mutate(max_capacity = paste0(round(100*max_capacity, 0), "%")) %>% 
-  dplyr::mutate(Safety_Stock = as.double(Safety_Stock)) -> ssmetrics_mainboard
-
-
+  
 
 # (Path revision needed) Check the first line to see the earliest day of the data ----
-ssmetrics_mainboard %>% head()
+ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "2021-07-12") %>% 
+  dplyr::filter(date != "07/12/21") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
 ssmetrics_mainboard %>% 
   dplyr::mutate(ref = gsub("_", "-", ref),
-                campus_ref = gsub("_", "-", campus_ref),
-                date = format(as.Date(date), "%m/%d/%y")) -> ssmetrics_mainboard
+                campus_ref = gsub("_", "-", campus_ref)) -> ssmetrics_mainboard
 
 
 
