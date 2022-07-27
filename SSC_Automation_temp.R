@@ -9,7 +9,7 @@ library(mstrio)
 
 ### ** For NA values in "Type", "Category", "Platform" -> they are new Items. look up yourself to verify ** ##
 
-test
+
 # ssmetrics_mainboard <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/megadata.7.11.22.xlsx",
 #                         col_names = FALSE)
 # save(ssmetrics_mainboard, file = "ssmetrics_megadata.7.11.22.rds")
