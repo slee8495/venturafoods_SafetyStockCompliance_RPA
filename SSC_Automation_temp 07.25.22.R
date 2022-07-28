@@ -576,6 +576,7 @@ Inv_cassandra %>%
 Inv_cassandra -> Inv_all
 
 
+
 readr::type_convert(Inv_all) -> Inv_all
 
 # Inv_all_pivot
@@ -585,10 +586,12 @@ Inv_all %>%
 Inv_all %>%
   dplyr::filter(Location == 86 | Location == 226) -> Inv_all_86_226_381
 
+
 Inv_all_86_226_381 %>%
   reshape2::dcast(Location + Item + Description ~ Hold_Status, value.var = "Current_Inventory_Balance", sum) -> Inv_all_pivot_86_226_381
 
 names(Inv_all_pivot_86_226_381) <- stringr::str_replace_all(names(Inv_all_pivot_86_226_381), c(" " = "_"))
+
 
 Inv_all_pivot_86_226_381 %>%
   dplyr::rename(Balance_Usable = Useable) %>% 
@@ -688,6 +691,10 @@ rbind(JDOH, Inv_all_pivot_86_226_381_for_JDOH) -> JDOH_complete
 # JDOH_complete - On_Hand
 JDOH_complete %>%
   dplyr::mutate(On_Hand = Balance_Usable + Balance_Hold) -> JDOH_complete
+
+
+JDOH_complete[!duplicated(JDOH_complete[,c("ref", "Lot_Status")]),] -> J
+
 
 ################################################################################################################################
 ############################################## up to here. two location resovled -> deactivated ################################
