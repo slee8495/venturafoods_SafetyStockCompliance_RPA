@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 library(tidyverse)
 library(magrittr)
 library(openxlsx)
@@ -588,6 +587,7 @@ Inv_all %>%
   dplyr::filter(Location == 86 | Location == 226) -> Inv_all_86_226_381
 
 
+
 Inv_all_86_226_381 %>%
   reshape2::dcast(Location + Item + Description ~ Hold_Status, value.var = "Current_Inventory_Balance", sum) -> Inv_all_pivot_86_226_381
 
@@ -609,13 +609,23 @@ Inv_all_pivot_86_226_381 %>%
   dplyr::select(-starts_with("Soft")) %>% 
   dplyr::relocate(Location, Item, Stock_Type, Description, Balance_Usable, Balance_Hold)  -> Inv_all_pivot_86_226_381_for_JDOH
 
+# Inv_all_pivot_86_226_381_for_JDOH %>% filter(Location == 86 & Balance_Hold != 0)
+# I %>% filter(Location == 86 & Balance_Hold != 0)
 # Inv_all_pivot_86_226_381_for_JDOH - Lot Status
+
 Inv_all_pivot_86_226_381_for_JDOH %>%
   merge(Inv_all_86_226_381[, c("ref", "Inventory_Status_Code")], by = "ref", all.x = TRUE) %>%
   relocate(Inventory_Status_Code, .after = Lot_Status) %>%
   dplyr::select(-Lot_Status) %>%
   dplyr::rename(Lot_Status = Inventory_Status_Code) %>%
   dplyr::relocate(ref) -> Inv_all_pivot_86_226_381_for_JDOH
+
+Inv_all_pivot_86_226_381_for_JDOH %>% 
+  dplyr::arrange(desc(Lot_Status)) -> Inv_all_pivot_86_226_381_for_JDOH
+
+Inv_all_pivot_86_226_381_for_JDOH[-which(duplicated(Inv_all_pivot_86_226_381_for_JDOH$ref)),] -> Inv_all_pivot_86_226_381_for_JDOH
+
+
 
 # Inv_all_pivot_86_226_381_for_JDOH - Stock_Type
 Inv_all_pivot_86_226_381_for_JDOH %>%
@@ -646,14 +656,6 @@ Inv_all_pivot_86_226_381_for_JDOH %>%
   dplyr::select(-Planner_Name) %>%
   dplyr::rename(Planner_Name = Alpha_Name) -> Inv_all_pivot_86_226_381_for_JDOH
 
-# Inv_all_pivot_86_226_381_for_JDOH - Lot Status
-Inv_all_pivot_86_226_381_for_JDOH %>%
-  merge(Inv_all_86_226_381[, c("ref", "Inventory_Status_Code")], by = "ref", all.x = TRUE) %>%
-  relocate(Inventory_Status_Code, .after = Lot_Status) %>%
-  dplyr::select(-Lot_Status) %>%
-  dplyr::rename(Lot_Status = Inventory_Status_Code) %>%
-  dplyr::relocate(ref) -> Inv_all_pivot_86_226_381_for_JDOH
-
 # Inv_all_pivot_86_226_381_for_JDOH - Stock_Type
 Inv_all_pivot_86_226_381_for_JDOH %>%
   merge(JD_item_branch[, c("ref", "Stocking_Type")], by = "ref", all.x = TRUE) %>%
@@ -669,19 +671,6 @@ Inv_all_pivot_86_226_381_for_JDOH %>%
   dplyr::rename(Safety_Stock = Safety_Stock.y) %>%
   dplyr::mutate(Safety_Stock = replace(Safety_Stock, is.na(Safety_Stock), 0)) -> Inv_all_pivot_86_226_381_for_JDOH
 
-# Inv_all_pivot_86_226_381_for_JDOH - Planner_No
-Inv_all_pivot_86_226_381_for_JDOH %>%
-  merge(exception_report[, c("ref", "Planner")], by = "ref", all.x = TRUE) %>%
-  dplyr::relocate(Planner, .after = Planner_No) %>%
-  dplyr::select(-Planner_No) %>%
-  dplyr::rename(Planner_No = Planner) -> Inv_all_pivot_86_226_381_for_JDOH
-
-# Inv_all_pivot_86_226_381_for_JDOH - Planner_Name
-Inv_all_pivot_86_226_381_for_JDOH %>%
-  merge(Planner_address[, c("Planner_No", "Alpha_Name")], by = "Planner_No", all.x = TRUE) %>%
-  dplyr::relocate(Alpha_Name, .after = Planner_Name) %>%
-  dplyr::select(-Planner_Name) %>%
-  dplyr::rename(Planner_Name = Alpha_Name) -> Inv_all_pivot_86_226_381_for_JDOH
 
 
 
@@ -689,12 +678,15 @@ Inv_all_pivot_86_226_381_for_JDOH %>%
 # Lot Status - vlookup from Inv_all_86_226_381
 rbind(JDOH, Inv_all_pivot_86_226_381_for_JDOH) -> JDOH_complete
 
+
+
+
 # JDOH_complete - On_Hand
 JDOH_complete %>%
-  dplyr::mutate(On_Hand = Balance_Usable + Balance_Hold) -> JDOH_complete
+  dplyr::mutate(On_Hand = Balance_Usable + Balance_Hold,
+                On_Hand = as.double(On_Hand)) -> JDOH_complete
 
-
-JDOH_complete[!duplicated(JDOH_complete[,c("ref", "Lot_Status")]),] -> J
+sum(JDOH_complete$On_Hand)
 
 
 ################################################################################################################################
