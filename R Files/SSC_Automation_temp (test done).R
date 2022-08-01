@@ -220,6 +220,7 @@ colnames(exception_report)[28] <- "UOM"
 colnames(exception_report)[29] <- "PL QTY"
 colnames(exception_report)[30] <- "Planning Formula"
 colnames(exception_report)[31] <- "Costing Formula"
+colnames(exception_report)[32] <- "null"
 
 names(exception_report) <- str_replace_all(names(exception_report), c(" " = "_"))
 
@@ -975,7 +976,9 @@ ssmetrics_final %>%
 # Macro-platform
 ssmetrics_final %>% 
   dplyr::left_join(macro_platform, by = "Platform") %>% 
-  dplyr::mutate(macro_platform = replace(macro_platform, is.na(macro_platform), Type)) -> ssmetrics_final
+  dplyr::mutate(macro_platform = ifelse(is.na(macro_platform), Type, macro_platform)) -> ssmetrics_final
+
+
 
 # Location_Name
 ssmetrics_final %>% 
@@ -1054,8 +1057,9 @@ ssmetrics_final %>%
 # mfg_line & max capacity
 ssmetrics_final %>% 
   dplyr::left_join(inventory_model, by = "ref") %>% 
-  dplyr::mutate(mfg_line = replace(mfg_line, is.na(mfg_line), Type)) %>% 
+  dplyr::mutate(mfg_line = ifelse(is.na(mfg_line), Type, mfg_line)) %>% 
   dplyr::mutate(max_capacity = replace(max_capacity, is.na(max_capacity), 0)) -> ssmetrics_final
+
 
 # Capacity Status
 ssmetrics_final %>% 
