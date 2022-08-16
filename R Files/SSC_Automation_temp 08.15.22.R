@@ -354,7 +354,7 @@ po %>%
 
 
 # (Path revision needed) JD - OH ----
-JDOH <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/JD_OH_SS_20220815.xlsx", 
+JDOH <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/Copy of jd_oh_ss_20220815.xlsx", 
                    sheet = "itmbal", col_names = FALSE)
 
 
@@ -1095,7 +1095,7 @@ ssmetrics_final_2 %>%
                 campus_ref = gsub("_", "-", campus_ref),
                 date = format(as.Date(date), "%m/%d/%y")) -> ssmetrics_final_2
 
-writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0815 rev.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0815 rev2.xlsx") 
 
 
 
