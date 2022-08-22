@@ -9,7 +9,6 @@ library(mstrio)
 
 ### ** For NA values in "Type", "Category", "Platform" -> they are new Items. look up yourself to verify ** ##
 
-#type
 
 # ssmetrics_mainboard <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/megadata.7.11.22.xlsx",
 #                         col_names = FALSE)
@@ -17,7 +16,7 @@ library(mstrio)
 
 
 # (Path revision needed) load main board (mega data) ----
-load("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/Safety stock compliance/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_8_15_22.rds")
+load("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/Safety stock compliance/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_8_08_22.rds")
 
 
 ssmetrics_mainboard %>% 
@@ -229,6 +228,12 @@ names(exception_report) <- str_replace_all(names(exception_report), c(" " = "_")
 exception_report %<>% 
   dplyr::mutate(ref = paste0(B_P, "_", ItemNo)) %>% 
   dplyr::relocate(ref) 
+
+
+# exception report Planner NA to 0
+exception_report %>% 
+  dplyr::mutate(Planner = replace(Planner, is.na(Planner), 0)) -> exception_report
+
 
 
 # (Path revision needed) custord custord ----
@@ -1096,7 +1101,7 @@ ssmetrics_final_2 %>%
                 campus_ref = gsub("_", "-", campus_ref),
                 date = format(as.Date(date), "%m/%d/%y")) -> ssmetrics_final_2
 
-writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0822.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0822 rev1.xlsx") 
 
 
 
