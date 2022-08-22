@@ -644,8 +644,7 @@ Inv_all_pivot_86_226_381_for_JDOH %>%
 Inv_all_pivot_86_226_381_for_JDOH %>% 
   dplyr::arrange(desc(Lot_Status)) -> Inv_all_pivot_86_226_381_for_JDOH
 
-Inv_all_pivot_86_226_381_for_JDOH[-which(duplicated(Inv_all_pivot_86_226_381_for_JDOH$ref)),] -> Inv_all_pivot_86_226_381_for_JDOH
-
+Inv_all_pivot_86_226_381_for_JDOH[!duplicated(Inv_all_pivot_86_226_381_for_JDOH[,c("ref")]),] -> Inv_all_pivot_86_226_381_for_JDOH
 
 
 # Inv_all_pivot_86_226_381_for_JDOH - Stock_Type
