@@ -9,6 +9,7 @@ library(mstrio)
 
 ### ** For NA values in "Type", "Category", "Platform" -> they are new Items. look up yourself to verify ** ##
 
+#type
 
 # ssmetrics_mainboard <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/megadata.7.11.22.xlsx",
 #                         col_names = FALSE)
