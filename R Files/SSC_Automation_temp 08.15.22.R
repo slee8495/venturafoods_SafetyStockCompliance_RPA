@@ -230,6 +230,12 @@ exception_report %<>%
   dplyr::relocate(ref) 
 
 
+# exception report Planner NA to 0
+exception_report %>% 
+  dplyr::mutate(Planner = replace(Planner, is.na(Planner), 0)) -> exception_report
+
+
+
 # (Path revision needed) custord custord ----
 # Open Customer Order File pulling ----  Change Directory ----
 custord <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 08.15.22.xlsx", 
