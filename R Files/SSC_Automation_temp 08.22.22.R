@@ -16,7 +16,7 @@ library(mstrio)
 
 
 # (Path revision needed) load main board (mega data) ----
-load("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/Safety stock compliance/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_8_08_22.rds")
+load("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/SS Compliance/Safety stock compliance/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_8_15_22.rds")
 
 
 ssmetrics_mainboard %>% 
