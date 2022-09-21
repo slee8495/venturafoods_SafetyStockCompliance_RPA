@@ -402,7 +402,7 @@ colnames(JDOH)[3] <- "Stock_Type"
 colnames(JDOH)[4] <- "Description"
 colnames(JDOH)[5] <- "Balance_Usable"
 colnames(JDOH)[6] <- "Balance_Soft_Hold"
-colnames(JDOH)[7] <- "Balance_Hold"
+colnames(JDOH)[7] <- "Balance_Hard_Hold"
 colnames(JDOH)[8] <- "on_Hand"
 colnames(JDOH)[9] <- "Safety_Stock"
 colnames(JDOH)[10] <- "GL_Class"
@@ -415,16 +415,15 @@ JDOH %>%
   readr::type_convert() %>% 
   dplyr::mutate(Balance_Usable = replace(Balance_Usable, is.na(Balance_Usable), 0),
                 Balance_Soft_Hold = replace(Balance_Soft_Hold, is.na(Balance_Soft_Hold), 0),
-                Balance_Hold = replace(Balance_Hold, is.na(Balance_Hold), 0),
-                on_Hand = replace(on_Hand, is.na(on_Hand), 0),
                 Safety_Stock = replace(Safety_Stock, is.na(Safety_Stock), 0),
                 On_Hand = on_Hand + Balance_Soft_Hold) %>% 
   dplyr::relocate(On_Hand, .after = on_Hand) %>% 
-  dplyr::select(-on_Hand, -Balance_Soft_Hold) %>% 
+  dplyr::select(-on_Hand, -Balance_Hard_Hold) %>% 
   data.frame() %>% 
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(Lot_Status = "") %>% 
-  dplyr::relocate(Lot_Status, .after = Balance_Hold) -> JDOH
+  dplyr::relocate(Lot_Status, .after = Balance_Soft_Hold) %>% 
+  dplyr::rename(Balance_Hold = Balance_Soft_Hold) -> JDOH
 
 
 JDOH %>% 
