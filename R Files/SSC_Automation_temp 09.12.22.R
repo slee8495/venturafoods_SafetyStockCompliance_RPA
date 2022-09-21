@@ -391,27 +391,27 @@ po %>%
 
 
 # New JDOH File ----
-jdoh <- read_csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Maintenance/9.21.22 Margeret report change/R5541030_VF000001_38442826_R.csv")
+JDOH <- read_csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Maintenance/9.21.22 Margeret report change/R5541030_VF000001_38442826_R.csv")
 
-jdoh[-1:-3, ] %>% 
-  janitor::clean_names() -> jdoh
+JDOH[-1:-3, ] %>% 
+  janitor::clean_names() -> JDOH
 
-colnames(jdoh)[1] <- "Location"
-colnames(jdoh)[2] <- "Item"
-colnames(jdoh)[3] <- "Stock_Type"
-colnames(jdoh)[4] <- "Description"
-colnames(jdoh)[5] <- "Balance_Usable"
-colnames(jdoh)[6] <- "Balance_Soft_Hold"
-colnames(jdoh)[7] <- "Balance_Hold"
-colnames(jdoh)[8] <- "on_Hand"
-colnames(jdoh)[9] <- "Safety_Stock"
-colnames(jdoh)[10] <- "GL_Class"
-colnames(jdoh)[11] <- "Planner_No"
-colnames(jdoh)[12] <- "Planner_Name"
+colnames(JDOH)[1] <- "Location"
+colnames(JDOH)[2] <- "Item"
+colnames(JDOH)[3] <- "Stock_Type"
+colnames(JDOH)[4] <- "Description"
+colnames(JDOH)[5] <- "Balance_Usable"
+colnames(JDOH)[6] <- "Balance_Soft_Hold"
+colnames(JDOH)[7] <- "Balance_Hold"
+colnames(JDOH)[8] <- "on_Hand"
+colnames(JDOH)[9] <- "Safety_Stock"
+colnames(JDOH)[10] <- "GL_Class"
+colnames(JDOH)[11] <- "Planner_No"
+colnames(JDOH)[12] <- "Planner_Name"
 
-jdoh[, 1:12] -> jdoh
+JDOH[, 1:12] -> JDOH
 
-jdoh %>% 
+JDOH %>% 
   readr::type_convert() %>% 
   dplyr::mutate(Balance_Usable = replace(Balance_Usable, is.na(Balance_Usable), 0),
                 Balance_Soft_Hold = replace(Balance_Soft_Hold, is.na(Balance_Soft_Hold), 0),
@@ -424,13 +424,13 @@ jdoh %>%
   data.frame() %>% 
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(Lot_Status = "") %>% 
-  dplyr::relocate(Lot_Status, .after = Balance_Hold) -> jdoh
+  dplyr::relocate(Lot_Status, .after = Balance_Hold) -> JDOH
 
 
-jdoh %>% 
+JDOH %>% 
   dplyr::filter(Location != 86 & Location!= 226) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
-  dplyr::relocate(ref) -> jdoh
+  dplyr::relocate(ref) -> JDOH
 
 
 ############################################################################################################################
