@@ -391,7 +391,7 @@ po %>%
 
 
 # New JDOH File ----
-JDOH <- read_csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/9.26.22 report/Inv Balance without Lot Number - 09.26.22.csv")
+JDOH <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/Inv Bal without Lot Number - 09.26.22.xlsx")
 
 JDOH[-1:-3, ] %>% 
   janitor::clean_names() -> JDOH
