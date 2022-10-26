@@ -800,7 +800,7 @@ ssmetrics %>%
   dplyr::select(-Hold_Status) %>% 
   dplyr::rename(Hold_Status = Hold_Status.y) -> ssmetrics
 
-ssmetrics %>% filter(ref == "10_12523HLC")
+ 
 
 # MPF - vlookup
 merge(ssmetrics, exception_report[, c("ref", "MPF_or_Line")], by = "ref", all.x = TRUE) %>% 
@@ -1131,9 +1131,15 @@ ssmetrics_final %>%
                   Sku_greater_or_equal_ss, Sku_less_ss, Sku_less_ss_with_supply, priority_sku_unique, oil_allocation,
                   campus_ss, campus_total_available, campus_Sku_ss, campus_Sku_greater_equal_ss, campus_Sku_less_ss) -> ssmetrics_final
 
+
+ssmetrics_final %>% 
+  dplyr::mutate(MTO_MTS = ifelse(Location == 430, 4, MTO_MTS)) -> ssmetrics_final
+
+
 # Final Touch
 ssmetrics_final %>% 
   dplyr::filter(MTO_MTS == 4) -> ssmetrics_final
+
 
 
 # (Path revision needed) #### weekly result ##### ----
