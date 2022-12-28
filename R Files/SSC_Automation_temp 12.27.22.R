@@ -90,7 +90,7 @@ colnames(oil_aloc)[3] <- "comp_desc"
 # (Path revision needed) Inventory Model  (Make sure to remove the password of the original .xlsx file) ----
 # Make sure with the password: Elli
 
-inventory_model <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/Desktop/SS Optimization by Location - Finished Goods November 2022.xlsx",
+inventory_model <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/Desktop/SS Optimization by Location - Finished Goods December 2022.xlsx",
                               col_names = FALSE, sheet = "Fin Goods")
 
 inventory_model[-1:-7, ] -> inventory_model
@@ -137,7 +137,7 @@ Lot_Status %>%
   dplyr::select(Lot_Status, Hold_Status) -> Lot_Status
 
 # (Path revision needed) previous SS_Metrics file ----
-ssmetrics_pre <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/Archive/Copy of Safety Stock Compliance Report Data v3 - 11.21.22.xlsx",
+ssmetrics_pre <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/Archive/Copy of Safety Stock Compliance Report Data v3 - 12.19.22.xlsx",
                             col_names = FALSE)
 
 ssmetrics_pre[-1, ] -> ssmetrics_pre
@@ -148,7 +148,7 @@ names(ssmetrics_pre) <- str_replace_all(names(ssmetrics_pre), c("/" = "_"))
 
 
 # (Path revision needed) Planner_address Change Directory only when you need to ----
-Planner_address <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/Address Book - 11.01.22.xlsx", 
+Planner_address <- read_excel("S:/Supply Chain Projects/Linda Liang/reference files/Address Book - 12.07.22.xlsx", 
                               sheet = "Sheet1", col_types = c("text", 
                                                               "text", "text", "text", "text"))
 
@@ -179,7 +179,7 @@ JD_item_branch %>%
   dplyr::mutate(ref = paste0(Location, "_", Item)) -> JD_item_branch
 
 # (Path revision needed) exception report ----
-exception_report <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/exception report 11.28.22.xlsx", 
+exception_report <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/exception report 12.27.22.xlsx", 
                                sheet = "Sheet1")
 
 readr::type_convert(exception_report) -> exception_report
@@ -238,7 +238,7 @@ exception_report %>%
 
 # (Path revision needed) custord custord ----
 # Open Customer Order File pulling ----  Change Directory ----
-custord <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 11.28.22.xlsx", 
+custord <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 12.27.22.xlsx", 
                       sheet = "custord", col_names = FALSE)
 
 
@@ -269,7 +269,7 @@ reshape2::dcast(custord, ref ~ in_next_7_days, value.var = "Qty", sum) %>%
 
 
 # (Path revision needed) Custord wo ----
-wo <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 11.28.22.xlsx", 
+wo <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 12.27.22.xlsx", 
                  sheet = "wo", col_names = FALSE)
 
 
@@ -299,7 +299,7 @@ wo %>%
 
 
 # (Path revision needed) Custord Receipt ----
-receipt <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 11.28.22.xlsx", 
+receipt <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 12.27.22.xlsx", 
                       sheet = "receipt", col_names = FALSE)
 
 
@@ -329,7 +329,7 @@ receipt %>%
 
 
 # (Path revision needed) Custord PO ----
-po <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 11.28.22.xlsx", 
+po <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/wo receipt custord po - 12.27.22.xlsx", 
                  sheet = "po", col_names = FALSE)
 
 po %>% 
@@ -391,7 +391,7 @@ po %>%
 
 
 # New JDOH File ----
-JDOH <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/Inv Bal without Lot Number - 11.28.22.xlsx")
+JDOH <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/Inv Bal without Lot Number - 12.27.22.xlsx")
 
 JDOH[-1:-3, ] %>% 
   janitor::clean_names() -> JDOH
@@ -593,10 +593,10 @@ JDOH %>%
 # ###############################################################################################################################
 # 
 # (Path revision needed) Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
-Inv_cassandra_fg <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/Inventory Analysis - 11.28.22.xlsx",
+Inv_cassandra_fg <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/Inventory Analysis - 12.27.22.xlsx",
                                sheet = "FG", col_names = FALSE)
 
-Inv_cassandra_rm <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/Inventory Analysis - 11.28.22.xlsx",
+Inv_cassandra_rm <- read_excel("C:/Users/lliang/OneDrive - Ventura Foods/R Studio/Source Data/Inventory Analysis - 12.27.22.xlsx",
                                sheet = "RM", col_names = FALSE)
 
 Inv_cassandra_fg[-1:-2, ] -> Inv_cassandra_fg
@@ -1149,7 +1149,7 @@ ssmetrics_final_2 %>%
                 campus_ref = gsub("_", "-", campus_ref),
                 date = format(as.Date(date), "%m/%d/%y")) -> ssmetrics_final_2
 
-writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 1128.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 1227.xlsx") 
 
 
 
@@ -1181,7 +1181,7 @@ ssmetrics_mainboard %>%
 
 
 # (Path revision needed) ----
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard_11_28_22.rds")
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard_12_27_22.rds")
 
 # (Path revision needed) ----
 writexl::write_xlsx(ssmetrics_mainboard, "SS Metrics_mainboard_8_01_22.xlsx") 
