@@ -1238,12 +1238,3 @@ writexl::write_xlsx(ssmetrics_mainboard, "SS Metrics_mainboard_8_01_22.xlsx")
 
 
 
-
-
-
-
-
-
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_01_30_23.rds")
-ssmetrics_mainboard %>% 
-  dplyr::filter(Item == "98985") %>% data.frame()
