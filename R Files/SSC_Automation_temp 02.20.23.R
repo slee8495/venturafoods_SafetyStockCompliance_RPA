@@ -1185,56 +1185,40 @@ ssmetrics_mainboard %>%
 # (Path revision needed) ----
 save(ssmetrics_mainboard, file = "ssmetrics_mainboard_02_20_23.rds")
 
-# (Path revision needed) ----
-writexl::write_xlsx(ssmetrics_mainboard, "SS Metrics_mainboard_8_01_22.xlsx") 
 
 
 
+#######################################################################################################################################
+#######################################################################################################################################
+#######################################################################################################################################
 
-# colnames(ssmetrics_mainboard)[1]	<-	"Month"
-# colnames(ssmetrics_mainboard)[2]	<-	"FY"
-# colnames(ssmetrics_mainboard)[3]	<-	"Year"
-# colnames(ssmetrics_mainboard)[4]	<-	"Category"
-# colnames(ssmetrics_mainboard)[5]	<-	"Platform"
-# colnames(ssmetrics_mainboard)[6]	<-	"Macro-Platform"
-# colnames(ssmetrics_mainboard)[7]	<-	"Loc Name"
-# colnames(ssmetrics_mainboard)[8]	<-	"Campus"
-# colnames(ssmetrics_mainboard)[9]	<-	"Date"
-# colnames(ssmetrics_mainboard)[10]	<-	"Location"
-# colnames(ssmetrics_mainboard)[11]	<-	"Item"
-# colnames(ssmetrics_mainboard)[12]	<-	"Description"
-# colnames(ssmetrics_mainboard)[13]	<-	"Type"
-# colnames(ssmetrics_mainboard)[14]	<-	"Stocking type description"
-# colnames(ssmetrics_mainboard)[15]	<-	"Planner Name"
-# colnames(ssmetrics_mainboard)[16]	<-	"MTO/MTS"
-# colnames(ssmetrics_mainboard)[17]	<-	"MPF/Line#"
-# colnames(ssmetrics_mainboard)[18]	<-	"SafetyStock"
-# colnames(ssmetrics_mainboard)[19]	<-	"BalanceUsable"	
-# colnames(ssmetrics_mainboard)[20]	<-	"Sum of BalanceHold(exclude hard hold)"
-# colnames(ssmetrics_mainboard)[21]	<-	"Ref"
-# colnames(ssmetrics_mainboard)[22]	<-	"Campus Ref"
-# colnames(ssmetrics_mainboard)[23]	<-	"Label"
-# colnames(ssmetrics_mainboard)[24]	<-	"mfg-line"
-# colnames(ssmetrics_mainboard)[25]	<-	"Capacity"
-# colnames(ssmetrics_mainboard)[26]	<-	"Capacity Status"
-# colnames(ssmetrics_mainboard)[27]	<-	"Current SS Alert"
-# colnames(ssmetrics_mainboard)[28]	<-	"Total Cust Order"
-# colnames(ssmetrics_mainboard)[29]	<-	"Cust Order qty in the next 5 days"
-# colnames(ssmetrics_mainboard)[30]	<-	"WO in next 5 days"
-# colnames(ssmetrics_mainboard)[31]	<-	"Receipt in next 5 days"
-# colnames(ssmetrics_mainboard)[32]	<-	"Open PO in next 5 days"
-# colnames(ssmetrics_mainboard)[33]	<-	"SS Alert after Cust Order in the next 5 days + WO & Receipt"
-# colnames(ssmetrics_mainboard)[34]	<-	"SKU has SS"
-# colnames(ssmetrics_mainboard)[35]	<-	"SKU >= SS"
-# colnames(ssmetrics_mainboard)[36]	<-	"SKU < SS"
-# colnames(ssmetrics_mainboard)[37]	<-	"SKU < SS with supply"
-# colnames(ssmetrics_mainboard)[38]	<-	"Priority SKU or Unique RM"
-# colnames(ssmetrics_mainboard)[39]	<-	"Oil Allocation SKU"
-# colnames(ssmetrics_mainboard)[40]	<-	"Campus SS"
-# colnames(ssmetrics_mainboard)[41]	<-	"Campus Total Available"
-# colnames(ssmetrics_mainboard)[42]	<-	"Campus SKU has SS"
-# colnames(ssmetrics_mainboard)[43]	<-	"Campus SKU >= SS"
-# colnames(ssmetrics_mainboard)[44]	<-	"Campus SKU < SS"
+# 2nd part of automation
+
+# Category & Platform
+
+report <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/2.20.23/Completed SKU list.xlsx")
+
+report[-1, ] -> report
+colnames(report) <- report[1, ]
+report[-1, ] -> report
+
+report %>% 
+  janitor::clean_names() %>% 
+  data.frame() %>% 
+  dplyr::select(product_label_sku, na_3, na_4) %>% 
+  dplyr::rename(category = na_3,
+                platform = na_4,
+                Item = product_label_sku) %>% 
+  dplyr::mutate(Item = gsub("-", "", Item)) -> report
 
 
+
+ssmetrics_mainboard %>% 
+  data.frame() -> ssmetrics_practice
+
+
+ssmetrics_practice %>% 
+  dplyr::left_join(report) %>% 
+  dplyr::mutate(category = ifelse(Type == "Packaging", "Packaging", "n"))
+  
 
