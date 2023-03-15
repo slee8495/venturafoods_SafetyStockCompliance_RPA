@@ -1172,7 +1172,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "11/08/21") %>% 
+  dplyr::filter(date != "11/15/21") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
@@ -1183,7 +1183,7 @@ ssmetrics_mainboard %>%
 
 
 # (Path revision needed) ----
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard_03_08_23.rds")
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard_03_15_23.rds")
 
 
 
