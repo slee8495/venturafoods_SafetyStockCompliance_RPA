@@ -1166,7 +1166,10 @@ ssmetrics_final_2 %>%
 
 # MPF error fix
 ssmetrics_final_2 %>% 
-  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Raw Material", Type, MPF)) -> ssmetrics_final_2
+  dplyr::mutate(MPF = ifelse(is.na(MPF) & Stocking_Type_Description == "Raw Material", Type, MPF)) %>% 
+  dplyr::mutate(MPF = ifelse(MPF == "Packaging", "PKG",
+                             ifelse(MPF == "Label", "LBL",
+                                    ifelse(MPF == "Ingredients", "ING", MPF)))) -> ssmetrics_final_2
 
 
 
@@ -1190,19 +1193,39 @@ completed_sku_list %>%
   dplyr::select(Item, Platform) -> completed_sku_list_platform
 
 
+
 ssmetrics_final_2 %>%
   dplyr::select(-Category, -Platform) %>% 
   dplyr::left_join(completed_sku_list_category) %>% 
   dplyr::left_join(completed_sku_list_platform) %>% 
   dplyr::relocate(c(Category, Platform), .after = year) %>% 
-  dplyr::mutate(Category = ifelse(is.na(Category), MPF, Category)) %>% 
-  dplyr::mutate(Category = ifelse(Category == "PKG", "Packaging",
-                                  ifelse(Category == "LBL", "Label",
-                                         ifelse(Category == "ING", "Ingredients", Category)))) %>% 
-  dplyr::mutate(Platform = ifelse(is.na(Platform), MPF, Platform)) %>% 
-  dplyr::mutate(Platform = ifelse(Platform == "PKG", "Packaging",
-                                  ifelse(Platform == "LBL", "Label",
-                                         ifelse(Platform == "ING", "Ingredients", Platform)))) -> ssmetrics_final_2
+  dplyr::mutate(Category = ifelse(Stocking_Type_Description == "Raw Material" & MPF != "PKG" & MPF != "ING" & MPF != "LBL",
+                                  Type, Category)) %>% 
+  dplyr::mutate(Platform = ifelse(Stocking_Type_Description == "Raw Material" & MPF != "PKG" & MPF != "ING" & MPF != "LBL",
+                                  Type, Platform)) -> ssmetrics_final_2
+
+
+
+ssmetrics_final_2 %>% 
+  dplyr::mutate(Category = ifelse(Stocking_Type_Description == "Raw Material" & MPF == "PKG", "Packaging",
+                                  ifelse(Stocking_Type_Description == "Raw Material" & MPF == "LBL", "Label",
+                                         ifelse(Stocking_Type_Description == "Raw Material" & MPF == "ING", "Ingredients", Category)))) %>% 
+  dplyr::mutate(Platform = ifelse(Stocking_Type_Description == "Raw Material" & MPF == "PKG", "Packaging",
+                                  ifelse(Stocking_Type_Description == "Raw Material" & MPF == "LBL", "Label",
+                                         ifelse(Stocking_Type_Description == "Raw Material" & MPF == "ING", "Ingredients", Platform)))) -> ssmetrics_final_2
+
+
+ssmetrics_final_2 %>% 
+  dplyr::mutate(Category = ifelse(is.na(Category) & Type == "Packaging", "Packaging",
+                                   ifelse(is.na(Category) & Type == "Label", "Label",
+                                          ifelse(is.na(Category) & Type == "Ingredients", "Ingridents", Category)))) %>% 
+  dplyr::mutate(Platform = ifelse(is.na(Platform) & Type == "Packaging", "Packaging",
+                                  ifelse(is.na(Platform) & Type == "Label", "Label",
+                                         ifelse(is.na(Platform) & Type == "Ingredients", "Ingridents", Platform)))) -> ssmetrics_final_2
+
+
+
+
 
 
 
