@@ -1246,6 +1246,33 @@ ssmetrics_final_2 %>%
 
 
 
+# MPF (PFG fix)
+ssmetrics_final_2 %>% 
+  dplyr::mutate(MPF = ifelse(MPF == "PFG", "PKG", MPF)) -> ssmetrics_final_2
+
+
+# mfg_line raw material fix
+ssmetrics_final_2 %>% 
+  dplyr::mutate(mfg_line = ifelse(is.na(mfg_line) & Stocking_Type_Description == "Raw Material", Category, mfg_line)) %>% 
+  dplyr::mutate(mfg_line = ifelse(mfg_line == "Packaging", "PKG",
+                                  ifelse(mfg_line == "Label", "LBL",
+                                         ifelse(mfg_line == "Ingredients", "ING", mfg_line)))) -> ssmetrics_final_2
+
+
+# Type
+ssmetrics_final_2 %>% 
+  dplyr::mutate(Type = ifelse(is.na(Type) & Stocking_Type_Description == "Raw Material", Category,
+                              ifelse(is.na(Type) & Stocking_Type_Description == "Make", "Finished Goods",
+                                     ifelse(is.na(Type) & Stocking_Type_Description == "Transfer", "Finished Goods",
+                                            ifelse(is.na(Type) & Stocking_Type_Description == "Purchased", "Finished Goods", Type))))) -> ssmetrics_final_2
+
+# MTO/MTS
+ssmetrics_final_2 %>% 
+  dplyr::mutate(MTO_MTS = "MTS") -> ssmetrics_final_2 
+
+
+
+
 writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0417.xlsx") 
 
 
@@ -1270,7 +1297,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "12/13/21") %>% 
+  dplyr::filter(date != "12/20/21") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
@@ -1281,7 +1308,7 @@ ssmetrics_mainboard %>%
 
 
 # (Path revision needed) ----
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard_04_10_23.rds")
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard_04_17_23.rds")
 
 
 
