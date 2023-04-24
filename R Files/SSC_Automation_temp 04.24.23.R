@@ -1271,11 +1271,17 @@ ssmetrics_final_2 %>%
   dplyr::mutate(MTO_MTS = "MTS") -> ssmetrics_final_2 
 
 
+# Dups remove
+ssmetrics_final_2[!duplicated(ssmetrics_final_2[,c("ref", "oil_allocation")]),] -> ssmetrics_final_2
+
+
+
+
 
 
 writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0424.xlsx") 
 
-
+    
 
 #####################################################################################################################################
 ###################################################### save & update mega data ######################################################
