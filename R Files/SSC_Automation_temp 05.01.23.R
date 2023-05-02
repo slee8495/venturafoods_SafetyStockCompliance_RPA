@@ -16,7 +16,7 @@ library(mstrio)
 
 
 # (Path revision needed) load main board (mega data) ----
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_04_17_23.rds")
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_04_24_23.rds")
 
 
 ssmetrics_mainboard %>% 
@@ -139,7 +139,7 @@ Lot_Status %>%
   dplyr::select(Lot_Status, Hold_Status) -> Lot_Status
 
 # (Path revision needed) previous SS_Metrics file ----
-ssmetrics_pre <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/Copy of Safety Stock Compliance Report Data v3 - 04.17.23.xlsx",
+ssmetrics_pre <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/Copy of Safety Stock Compliance Report Data v3 - 04.24.23.xlsx",
                             col_names = FALSE)
 
 ssmetrics_pre[-1, ] -> ssmetrics_pre
@@ -162,7 +162,7 @@ Planner_address %>%
   dplyr::select(1:2) -> Planner_address
 
 # (Path revision needed) JDE VF Item Branch - Work with Item Branch ----
-JD_item_branch <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/Item Branch.xlsx",
+JD_item_branch <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.1.23/Item Branch.xlsx",
                              col_names = FALSE)
 
 colnames(JD_item_branch) <- JD_item_branch[1, ]
@@ -181,7 +181,7 @@ JD_item_branch %>%
   dplyr::mutate(ref = paste0(Location, "_", Item)) -> JD_item_branch
 
 # (Path revision needed) exception report ----
-exception_report <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/exception report.xlsx", 
+exception_report <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.1.23/exception report.xlsx", 
                                sheet = "Sheet1")
 
 readr::type_convert(exception_report) -> exception_report
@@ -240,13 +240,13 @@ exception_report %>%
 
 # (Path revision needed) custord custord ----
 # Open Customer Order File pulling ----  Change Directory ----
-custord <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/custord po wo receipt.xlsx", 
-                      sheet = "custord", col_names = FALSE)
+custord <- read.csv("Z:/IMPORT_CUSTORDS.csv",
+                    header = FALSE)
 
 
 
 custord %>% 
-  dplyr::rename(aa = "...1") %>% 
+  dplyr::rename(aa = V1) %>% 
   tidyr::separate(aa, c("1", "2", "3", "4", "5", "6", "7", "8", "9"), sep = "~") %>% 
   dplyr::select(-"3", -"6", -"7", -"8") -> custord
 
@@ -271,12 +271,12 @@ reshape2::dcast(custord, ref ~ in_next_7_days, value.var = "Qty", sum) %>%
 
 
 # (Path revision needed) Custord wo ----
-wo <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/custord po wo receipt.xlsx", 
-                 sheet = "wo", col_names = FALSE)
+wo <- read.csv("Z:/IMPORT_JDE_OPENWO.csv",
+               header = FALSE)
 
 
 wo %>% 
-  dplyr::rename(aa = "...1") %>% 
+  dplyr::rename(aa = V1) %>% 
   tidyr::separate(aa, c("1", "2", "3", "4", "5", "6", "7", "8"), sep = "~") %>% 
   dplyr::select(-"3") %>% 
   dplyr::rename(aa = "1") %>%  
@@ -301,12 +301,12 @@ wo %>%
 
 
 # (Path revision needed) Custord Receipt ----
-receipt <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/custord po wo receipt.xlsx", 
-                      sheet = "receipt", col_names = FALSE)
+receipt <- read.csv("Z:/IMPORT_RECEIPTS.csv",
+                    header = FALSE)
 
 
 receipt %>% 
-  dplyr::rename(aa = "...1") %>% 
+  dplyr::rename(aa = V1) %>% 
   tidyr::separate(aa, c("1", "2", "3", "4", "5", "6", "7", "8"), sep = "~") %>% 
   dplyr::select(-"3", -"8") %>% 
   dplyr::rename(aa = "1") %>% 
@@ -331,11 +331,11 @@ receipt %>%
 
 
 # (Path revision needed) Custord PO ----
-po <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/custord po wo receipt.xlsx", 
-                 sheet = "po", col_names = FALSE)
+po <- read.csv("Z:/IMPORT_JDE_OPENPO.csv",
+               header = FALSE)
 
 po %>% 
-  dplyr::rename(aa = "...1") %>% 
+  dplyr::rename(aa = V1) %>% 
   tidyr::separate(aa, c("1", "2", "3", "4", "5", "6", "7", "8"), sep = "~") %>% 
   dplyr::select(-"3") %>% 
   dplyr::rename(aa = "1") %>% 
@@ -393,7 +393,7 @@ po %>%
 
 
 # New JDOH File ----
-JDOH <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/Inv Bal Without Lot Number.xlsx")
+JDOH <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.1.23/Inv Bal without Lot Number.xlsx")
 
 JDOH[-1:-3, ] %>% 
   janitor::clean_names() -> JDOH
@@ -595,10 +595,10 @@ JDOH %>%
 # ###############################################################################################################################
 # 
 # (Path revision needed) Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
-Inv_cassandra_fg <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/Inventory Analysis.xlsx",
+Inv_cassandra_fg <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.1.23/Inventory Analysis.xlsx",
                                sheet = "FG", col_names = FALSE)
 
-Inv_cassandra_rm <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.24.23/Inventory Analysis.xlsx",
+Inv_cassandra_rm <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.1.23/Inventory Analysis.xlsx",
                                sheet = "RM", col_names = FALSE)
 
 Inv_cassandra_fg[-1:-2, ] -> Inv_cassandra_fg
@@ -1174,7 +1174,7 @@ ssmetrics_final_2 %>%
 
 
 # completed sku list import (fix Category & Platform) ----
-completed_sku_list <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/4.17.23/Completed SKU list.xlsx")
+completed_sku_list <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.1.23/Completed SKU list.xlsx")
 completed_sku_list[-1:-2, ]  %>% 
   janitor::clean_names() %>% 
   dplyr::select(x4, x7, x9) %>% 
@@ -1279,7 +1279,7 @@ ssmetrics_final_2[!duplicated(ssmetrics_final_2[,c("ref", "oil_allocation")]),] 
 
 
 
-writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0424.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0501.xlsx") 
 
 
 
@@ -1303,7 +1303,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "12/28/21") %>% 
+  dplyr::filter(date != "01/03/22") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
@@ -1314,7 +1314,7 @@ ssmetrics_mainboard %>%
 
 
 # (Path revision needed) ----
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard_04_24_23.rds")
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard_05_01_23.rds")
 
 
 
