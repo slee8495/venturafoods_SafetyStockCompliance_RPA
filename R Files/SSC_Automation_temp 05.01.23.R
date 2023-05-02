@@ -1177,10 +1177,10 @@ ssmetrics_final_2 %>%
 completed_sku_list <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.1.23/Completed SKU list.xlsx")
 completed_sku_list[-1:-2, ]  %>% 
   janitor::clean_names() %>% 
-  dplyr::select(x4, x7, x9) %>% 
-  dplyr::rename(Item = x4,
-                Category = x7,
-                Platform = x9) %>% 
+  dplyr::select(x6, x9, x11) %>% 
+  dplyr::rename(Item = x6,
+                Category = x9,
+                Platform = x11) %>% 
   dplyr::mutate(Item = gsub("-", "", Item)) -> completed_sku_list
 
 completed_sku_list[!duplicated(completed_sku_list[,c("Item")]),] -> completed_sku_list
