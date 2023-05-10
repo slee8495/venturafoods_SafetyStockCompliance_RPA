@@ -1137,7 +1137,6 @@ ssmetrics_final %>%
 ssmetrics_final %>% 
   dplyr::mutate(MTO_MTS = ifelse(Location == 430, 4, MTO_MTS)) -> ssmetrics_final
 
-
 # Final Touch
 ssmetrics_final %>% 
   dplyr::filter(MTO_MTS == 4) -> ssmetrics_final
