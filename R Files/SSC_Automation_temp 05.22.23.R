@@ -595,10 +595,10 @@ JDOH %>%
 # ###############################################################################################################################
 # 
 # (Path revision needed) Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
-Inv_cassandra_fg <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.16.23/Inventory Analysis - FG.xlsx",
+Inv_cassandra_fg <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.22.23/Inventory Analysis - FG.xlsx",
                                col_names = FALSE)
 
-Inv_cassandra_rm <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.16.23/Inventory Analysis - RM.xlsx",
+Inv_cassandra_rm <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.22.23/Inventory Analysis - RM.xlsx",
                                col_names = FALSE)
 
 Inv_cassandra_fg[-1:-2, ] -> Inv_cassandra_fg
@@ -1302,7 +1302,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "01/19/22") %>% 
+  dplyr::filter(date != "01/24/22") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
@@ -1313,7 +1313,7 @@ ssmetrics_mainboard %>%
 
 
 # (Path revision needed) ----
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard_05_16_23.rds")
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard_05_22_23.rds")
 
 
 
