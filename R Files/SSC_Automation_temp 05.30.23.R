@@ -1275,6 +1275,10 @@ ssmetrics_final_2[!duplicated(ssmetrics_final_2[,c("ref", "oil_allocation")]),] 
 
 
 
+################### Additional Code revise 5/30/2023 ######################
+
+ssmetrics_final_2 %>% 
+  dplyr::mutate(Platform = ifelse(Platform == "Ingridents", "Ingredients", Platform)) -> ssmetrics_final_2
 
 
 
