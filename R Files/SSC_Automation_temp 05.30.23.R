@@ -1328,5 +1328,16 @@ save(ssmetrics_mainboard, file = "ssmetrics_mainboard_05_30_23.rds")
 #######################################################################################################################################
 
 
+# move rds file
+file.rename(from="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/ssmetrics_mainboard_05_30_23.rds",
+            to="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_05_30_23.rds")
+
+
+
+# move excel file
+file.rename(from="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/SS Metrics 0530.xlsx",
+            to="C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.30.23/SS Metrics 0530.xlsx")
+
+
 
 
