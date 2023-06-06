@@ -1395,7 +1395,7 @@ ssmetrics_final_2 %>%
 
 
 
-writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0530.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0605.xlsx") 
 
 
 
@@ -1419,7 +1419,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "01/31/22") %>% 
+  dplyr::filter(date != "02/07/22") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
@@ -1430,7 +1430,7 @@ ssmetrics_mainboard %>%
 
 
 # (Path revision needed) ----
-save(ssmetrics_mainboard, file = "ssmetrics_mainboard_05_30_23.rds")
+save(ssmetrics_mainboard, file = "ssmetrics_mainboard_06_05_23.rds")
 
 
 
@@ -1441,14 +1441,14 @@ save(ssmetrics_mainboard, file = "ssmetrics_mainboard_05_30_23.rds")
 
 
 # move rds file
-file.rename(from="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/ssmetrics_mainboard_05_30_23.rds",
-            to="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_05_30_23.rds")
+file.rename(from="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/ssmetrics_mainboard_06_05_23.rds",
+            to="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_06_05_23.rds")
 
 
 
 # move excel file
-file.rename(from="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/SS Metrics 0530.xlsx",
-            to="C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.30.23/SS Metrics 0530.xlsx")
+file.rename(from="C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/SS Metrics 0605.xlsx",
+            to="C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.5.23/SS Metrics 0605.xlsx")
 
 
 
