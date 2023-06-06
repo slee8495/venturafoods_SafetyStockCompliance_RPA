@@ -813,6 +813,7 @@ loc_430_for_jdoh <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura W
 loc_430_for_jdoh[-1:-3, ] -> loc_430_for_jdoh
 colnames(loc_430_for_jdoh) <- loc_430_for_jdoh[1, ]
 loc_430_for_jdoh[-1, ] -> loc_430_for_jdoh
+loc_430_for_jdoh[-nrow(loc_430_for_jdoh), ] -> loc_430_for_jdoh
 
 
 loc_430_for_jdoh %>% 
@@ -1285,7 +1286,7 @@ ssmetrics_final_2 %>%
 
 
 # completed sku list import (fix Category & Platform) ----
-completed_sku_list <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/5.16.23/Completed SKU list.xlsx")
+completed_sku_list <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.5.23/Completed SKU list - Linda (10).xlsx")
 completed_sku_list[-1:-2, ]  %>% 
   janitor::clean_names() %>% 
   dplyr::select(x6, x9, x11) %>% 
@@ -1393,6 +1394,9 @@ ssmetrics_final_2 %>%
   dplyr::mutate(Platform = ifelse(Platform == "Ingridents", "Ingredients", Platform)) %>% 
   dplyr::mutate(Category = ifelse(Category == "Ingridents", "Ingredients", Category)) -> ssmetrics_final_2
 
+#####################################################################################################################################
+#####################################################################################################################################
+#####################################################################################################################################
 
 
 writexl::write_xlsx(ssmetrics_final_2, "SS Metrics 0605.xlsx") 
