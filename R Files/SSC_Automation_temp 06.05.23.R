@@ -1394,6 +1394,19 @@ ssmetrics_final_2 %>%
   dplyr::mutate(Platform = ifelse(Platform == "Ingridents", "Ingredients", Platform)) %>% 
   dplyr::mutate(Category = ifelse(Category == "Ingridents", "Ingredients", Category)) -> ssmetrics_final_2
 
+
+################### Additional Code revise 6/05/2023 ######################
+ssmetrics_final_2 %>% 
+  dplyr::mutate(Planner_Name = replace(Planner_Name, is.na(Planner_Name), 0)) -> ssmetrics_final_2
+
+ssmetrics_final_2 %>% 
+  dplyr::mutate(capacity_status = ifelse(Type == "Finished Goods", 
+                                         ifelse(max_capacity > 0.85, "Constrained",
+                                                ifelse(max_capacity < 0.75, "OK", "Check")), Type)) -> ssmetrics_final_2
+
+
+
+
 #####################################################################################################################################
 #####################################################################################################################################
 #####################################################################################################################################
