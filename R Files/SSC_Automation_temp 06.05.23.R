@@ -1196,8 +1196,6 @@ ssmetrics_final %>%
   dplyr::mutate(campus_Sku_less_ss = ifelse(campus_ss > campus_total_available, 1, 0)) -> ssmetrics_final
 
 # Priority Sku or unique RM
-priority_sku[-which(duplicated(priority_sku$priority_sku)),] -> priority_sku
-
 ssmetrics_final %>% 
   dplyr::left_join(priority_sku, by = "Item") %>% 
   dplyr::mutate(priority_sku_unique = ifelse(is.na(priority_sku), "N", "Y")) %>% 
