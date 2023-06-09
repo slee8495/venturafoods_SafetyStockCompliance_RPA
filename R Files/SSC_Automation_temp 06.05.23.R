@@ -1404,6 +1404,18 @@ ssmetrics_final_2 %>%
 
 
 
+################### Additional Code revise 6/08/2023 ######################
+ssmetrics_final_2 %>% 
+  dplyr::mutate(Stocking_Type_Description = ifelse(Type == "Packaging", "Packaging", 
+                                                   ifelse(Type == "Label", "Label", 
+                                                          ifelse(Type == "Ingredients", "Ingredients", Stocking_Type_Description)))) %>% 
+  dplyr::mutate(Type = ifelse(Type == "Packaging", "Raw Material",
+                              ifelse(Type == "Label", "Raw Material",
+                                     ifelse(Type == "Ingredients", "Raw Material", Type)))) -> ssmetrics_final_2
+
+
+
+
 
 #####################################################################################################################################
 #####################################################################################################################################
