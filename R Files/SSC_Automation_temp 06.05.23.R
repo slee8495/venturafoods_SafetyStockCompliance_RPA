@@ -1406,12 +1406,14 @@ ssmetrics_final_2 %>%
 
 ################### Additional Code revise 6/08/2023 ######################
 ssmetrics_final_2 %>% 
-  dplyr::mutate(Stocking_Type_Description = ifelse(Type == "Packaging", "Packaging", 
-                                                   ifelse(Type == "Label", "Label", 
-                                                          ifelse(Type == "Ingredients", "Ingredients", Stocking_Type_Description)))) %>% 
-  dplyr::mutate(Type = ifelse(Type == "Packaging", "Raw Material",
-                              ifelse(Type == "Label", "Raw Material",
-                                     ifelse(Type == "Ingredients", "Raw Material", Type)))) -> ssmetrics_final_2
+  dplyr::mutate(type_2 = ifelse(Type == "Packaging", "Raw Material", 
+                                ifelse(Type == "Label", "Raw Material",
+                                       ifelse(Type == "Ingredients", "Raw Material", Type))),
+                stocking_type_2 = ifelse(type_2 == "Raw Material", Type, Stocking_Type_Description)) %>% 
+  dplyr::select(-Type, -Stocking_Type_Description) %>% 
+  dplyr::rename(Type = type_2,
+                Stocking_Type_Description = stocking_type_2) %>% 
+  dplyr::relocate(c(Type, Stocking_Type_Description), .after = Description) -> ssmetrics_final_2
 
 
 
