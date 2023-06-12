@@ -1454,7 +1454,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "02/07/22") %>% 
+  dplyr::filter(date != "02/14/22") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
