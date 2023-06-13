@@ -393,7 +393,7 @@ po %>%
 
 
 # New JDOH File ----
-JDOH <- read_csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.12.23/ATT11359.csv")
+JDOH <- read_xlsx("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.12.23/ATT11359.xlsx")
 
 JDOH[-1:-3, ] %>% 
   janitor::clean_names() -> JDOH
@@ -425,13 +425,13 @@ JDOH %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(Lot_Status = "") %>% 
   dplyr::relocate(Lot_Status, .after = Balance_Soft_Hold) %>% 
-  dplyr::rename(Balance_Hold = Balance_Soft_Hold) %>% 
+  dplyr::rename(Balance_Hold = Balance_Soft_Hold) -> JDOH
   
-  ########## added 6/12/23 ###########
-
-  tidyr::separate(Location, c("a", "Location", "c")) %>% 
-  dplyr::select(-a, -c) %>% 
-  dplyr::mutate(Location = as.numeric(Location)) -> JDOH
+  # ########## added 6/12/23 ###########
+  # 
+  # tidyr::separate(Location, c("a", "Location", "c")) %>% 
+  # dplyr::select(-a, -c) %>% 
+  # dplyr::mutate(Location = as.numeric(Location)) -> JDOH
 
 
 JDOH %>% 
@@ -1232,10 +1232,6 @@ ssmetrics_final %>%
                                                 ifelse(max_capacity < 0.75, "OK", "Check")), Type)) -> ssmetrics_final
 
 
-# max_capacity retouch
-ssmetrics_final %>% 
-  dplyr::mutate(max_capacity = paste0(round(100*max_capacity, 0), "%")) -> ssmetrics_final
-
 
 # month final touch
 ssmetrics_final %>% 
@@ -1422,6 +1418,14 @@ ssmetrics_final_2 %>%
   dplyr::relocate(c(Type, Stocking_Type_Description), .after = Description) -> ssmetrics_final_2
 
 
+
+################### Additional Code revise 6/12/2023 ######################
+ssmetrics_final_2 %>% 
+  dplyr::mutate(capacity_status = ifelse(Type == "Finished Goods",
+                                         ifelse(max_capacity > 0.85, "Constrained", 
+                                                ifelse(max_capacity < 0.75, "OK", "Check")), Type)) %>% 
+  dplyr::mutate(max_capacity = paste0(round(100*max_capacity, 0), "%")) %>% 
+  dplyr::mutate(capacity_status = ifelse(capacity_status == "Raw Material", Stocking_Type_Description, capacity_status)) -> ssmetrics_final_2
 
 
 
