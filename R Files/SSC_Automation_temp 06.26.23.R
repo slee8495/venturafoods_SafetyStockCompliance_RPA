@@ -394,11 +394,7 @@ po %>%
 
 
 # New JDOH File ----
-rio::convert("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.26.23/ATT76946.csv",
-             "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.26.23/ATT76946.xlsx")
-
-
-JDOH <- read_xlsx("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.26.23/ATT76946.xlsx")
+JDOH <- read_csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.26.23/ATT76946.csv")
 
 JDOH[-1:-3, ] %>% 
   janitor::clean_names() -> JDOH
@@ -419,6 +415,10 @@ colnames(JDOH)[12] <- "Planner_Name"
 JDOH[, 1:12] -> JDOH
 
 JDOH %>% 
+  tidyr::separate(Location, c("a", "b", "c", "d")) %>% 
+  dplyr::select(-a, -c, -d) %>% 
+  dplyr::rename(Location = b) %>% 
+  dplyr::mutate(Location = as.double(Location)) %>% 
   readr::type_convert() %>% 
   dplyr::mutate(Balance_Usable = replace(Balance_Usable, is.na(Balance_Usable), 0),
                 Balance_Soft_Hold = replace(Balance_Soft_Hold, is.na(Balance_Soft_Hold), 0),
@@ -743,11 +743,7 @@ rbind(JDOH, Inv_all_pivot_86_226_381_for_JDOH) -> JDOH_complete
 
 # JDOH_complete - On_Hand
 JDOH_complete %>%
-  dplyr::mutate(Balance_Usable = as.double(Balance_Usable),
-                Balance_Hold = as.double(Balance_Hold),
-                Balance_Usable = replace(Balance_Usable, is.na(Balance_Usable), 0),
-                Balance_Hold = replace(Balance_Hold, is.na(Balance_Hold), 0),
-                On_Hand = Balance_Usable + Balance_Hold,
+  dplyr::mutate(On_Hand = Balance_Usable + Balance_Hold,
                 On_Hand = as.double(On_Hand)) -> JDOH_complete
 
 
@@ -1158,7 +1154,6 @@ ssmetrics_final %>%
 
 # Location_Name
 ssmetrics_final %>% 
-  dplyr::mutate(Location = as.double(Location)) %>% 
   dplyr::left_join(location_name %>% select(1, 2), by = "Location") -> ssmetrics_final
 
 
