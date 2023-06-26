@@ -743,7 +743,11 @@ rbind(JDOH, Inv_all_pivot_86_226_381_for_JDOH) -> JDOH_complete
 
 # JDOH_complete - On_Hand
 JDOH_complete %>%
-  dplyr::mutate(On_Hand = Balance_Usable + Balance_Hold,
+  dplyr::mutate(Balance_Usable = as.double(Balance_Usable),
+                Balance_Hold = as.double(Balance_Hold),
+                Balance_Usable = replace(Balance_Usable, is.na(Balance_Usable), 0),
+                Balance_Hold = replace(Balance_Hold, is.na(Balance_Hold), 0),
+                On_Hand = Balance_Usable + Balance_Hold,
                 On_Hand = as.double(On_Hand)) -> JDOH_complete
 
 
@@ -1154,6 +1158,7 @@ ssmetrics_final %>%
 
 # Location_Name
 ssmetrics_final %>% 
+  dplyr::mutate(Location = as.double(Location)) %>% 
   dplyr::left_join(location_name %>% select(1, 2), by = "Location") -> ssmetrics_final
 
 
@@ -1463,7 +1468,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "02/14/22") %>% 
+  dplyr::filter(date != "02/28/22") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
