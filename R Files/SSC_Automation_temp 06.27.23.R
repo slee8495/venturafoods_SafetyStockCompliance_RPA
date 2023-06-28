@@ -6,7 +6,6 @@ library(writexl)
 library(reshape2)
 library(skimr)
 library(mstrio)
-library(rio)
 
 ### ** For NA values in "Type", "Category", "Platform" -> they are new Items. look up yourself to verify ** ##
 
@@ -394,7 +393,7 @@ po %>%
 
 
 # New JDOH File ----
-JDOH <- read_csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.26.23/ATT76946.csv")
+JDOH <- read_xlsx("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.26.23/ATT76946.xlsx")
 
 JDOH[-1:-3, ] %>% 
   janitor::clean_names() -> JDOH
@@ -415,10 +414,6 @@ colnames(JDOH)[12] <- "Planner_Name"
 JDOH[, 1:12] -> JDOH
 
 JDOH %>% 
-  tidyr::separate(Location, c("a", "b", "c", "d")) %>% 
-  dplyr::select(-a, -c, -d) %>% 
-  dplyr::rename(Location = b) %>% 
-  dplyr::mutate(Location = as.double(Location)) %>% 
   readr::type_convert() %>% 
   dplyr::mutate(Balance_Usable = replace(Balance_Usable, is.na(Balance_Usable), 0),
                 Balance_Soft_Hold = replace(Balance_Soft_Hold, is.na(Balance_Soft_Hold), 0),
@@ -1463,7 +1458,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "02/28/22") %>% 
+  dplyr::filter(date != "02/14/22") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
