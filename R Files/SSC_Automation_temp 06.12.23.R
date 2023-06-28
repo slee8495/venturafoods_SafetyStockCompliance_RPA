@@ -139,7 +139,7 @@ Lot_Status %>%
   dplyr::select(Lot_Status, Hold_Status) -> Lot_Status
 
 # (Path revision needed) previous SS_Metrics file ----
-ssmetrics_pre <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/Copy of Safety Stock Compliance Report Data v3 - 06.05.23.xlsx",
+ssmetrics_pre <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/Archive/Copy of Safety Stock Compliance Report Data v3 - 06.05.23.xlsx",
                             col_names = FALSE)
 
 ssmetrics_pre[-1, ] -> ssmetrics_pre
@@ -426,12 +426,6 @@ JDOH %>%
   dplyr::mutate(Lot_Status = "") %>% 
   dplyr::relocate(Lot_Status, .after = Balance_Soft_Hold) %>% 
   dplyr::rename(Balance_Hold = Balance_Soft_Hold) -> JDOH
-  
-  # ########## added 6/12/23 ###########
-  # 
-  # tidyr::separate(Location, c("a", "Location", "c")) %>% 
-  # dplyr::select(-a, -c) %>% 
-  # dplyr::mutate(Location = as.numeric(Location)) -> JDOH
 
 
 JDOH %>% 

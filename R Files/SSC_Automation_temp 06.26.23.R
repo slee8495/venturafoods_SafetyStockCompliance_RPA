@@ -138,8 +138,8 @@ Lot_Status %>%
                 Hold_Status = "Hard/Soft Hold") %>% 
   dplyr::select(Lot_Status, Hold_Status) -> Lot_Status
 
-# (Path revision needed) previous SS_Metrics file ----
-ssmetrics_pre <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/Copy of Safety Stock Compliance Report Data v3 - 06.19.23.xlsx",
+# previous SS_Metrics file (This is the most recent file format before we changed "Type" and "Stocking Type Description") - Do not change this until further notice
+ssmetrics_pre <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/Archive/Copy of Safety Stock Compliance Report Data v3 - 06.05.23.xlsx",
                             col_names = FALSE)
 
 ssmetrics_pre[-1, ] -> ssmetrics_pre
@@ -393,7 +393,7 @@ po %>%
 
 
 # New JDOH File ----
-JDOH <- read_xlsx("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.26.23/ATT76946.xlsx")
+JDOH <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/6.26.23/ATT76946.xlsx")
 
 JDOH[-1:-3, ] %>% 
   janitor::clean_names() -> JDOH
@@ -426,12 +426,6 @@ JDOH %>%
   dplyr::mutate(Lot_Status = "") %>% 
   dplyr::relocate(Lot_Status, .after = Balance_Soft_Hold) %>% 
   dplyr::rename(Balance_Hold = Balance_Soft_Hold) -> JDOH
-
-# ########## added 6/12/23 ###########
-# 
-# tidyr::separate(Location, c("a", "Location", "c")) %>% 
-# dplyr::select(-a, -c) %>% 
-# dplyr::mutate(Location = as.numeric(Location)) -> JDOH
 
 
 JDOH %>% 
@@ -1232,6 +1226,10 @@ ssmetrics_final %>%
                                                 ifelse(max_capacity < 0.75, "OK", "Check")), Type)) -> ssmetrics_final
 
 
+# max_capacity retouch
+ssmetrics_final %>% 
+  dplyr::mutate(max_capacity = paste0(round(100*max_capacity, 0), "%")) -> ssmetrics_final
+
 
 # month final touch
 ssmetrics_final %>% 
@@ -1419,14 +1417,6 @@ ssmetrics_final_2 %>%
 
 
 
-################### Additional Code revise 6/12/2023 ######################
-ssmetrics_final_2 %>% 
-  dplyr::mutate(capacity_status = ifelse(Type == "Finished Goods",
-                                         ifelse(max_capacity > 0.85, "Constrained", 
-                                                ifelse(max_capacity < 0.75, "OK", "Check")), Type)) %>% 
-  dplyr::mutate(max_capacity = paste0(round(100*max_capacity, 0), "%")) %>% 
-  dplyr::mutate(capacity_status = ifelse(capacity_status == "Raw Material", Stocking_Type_Description, capacity_status)) -> ssmetrics_final_2
-
 
 
 #####################################################################################################################################
@@ -1458,7 +1448,7 @@ ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
 # (Path revision needed) ----
 ssmetrics_mainboard %>% 
-  dplyr::filter(date != "02/14/22") %>% 
+  dplyr::filter(date != "02/07/22") %>% 
   dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
