@@ -1416,6 +1416,19 @@ ssmetrics_final_2 %>%
   dplyr::relocate(c(Type, Stocking_Type_Description), .after = Description) -> ssmetrics_final_2
 
 
+################### Additional Code revise 7/10/2023 ######################
+campus_ref %>% 
+  dplyr::select(Location, campus_no) %>% 
+  dplyr::mutate(Location = as.double(Location),
+                campus_no = as.double(campus_no)) -> campus_ref_2
+
+ssmetrics_final_2 %>% 
+  merge(campus_ref_2[, c("Location", "campus_no")], by = "Location", all.x = TRUE) %>% 
+  dplyr::relocate(campus_no, .before = Campus) -> ssmetrics_final_2
+
+
+
+
 
 
 
