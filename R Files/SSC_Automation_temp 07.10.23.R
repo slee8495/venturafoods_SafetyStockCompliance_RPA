@@ -1456,13 +1456,7 @@ readr::type_convert(ssmetrics_mainboard) -> ssmetrics_mainboard
 
 
 
-# (Path revision needed) Check the first line to see the earliest day of the data ----
-ssmetrics_mainboard %>% dplyr::select(date) %>% head(1)
 
-# (Path revision needed) ----
-ssmetrics_mainboard %>% 
-  dplyr::filter(date != "02/07/22") %>% 
-  dplyr::bind_rows(ssmetrics_final) -> ssmetrics_mainboard
 
 
 ssmetrics_mainboard %>% 
