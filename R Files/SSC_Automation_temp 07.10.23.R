@@ -1427,7 +1427,8 @@ ssmetrics_final_2 %>%
   dplyr::relocate(campus_no, .before = Campus) -> ssmetrics_final_2
 
 
-
+ssmetrics_final_2 %>% 
+  dplyr::relocate(Location, .after = date) -> ssmetrics_final_2
 
 
 
