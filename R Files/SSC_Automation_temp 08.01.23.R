@@ -755,19 +755,19 @@ JDOH_complete %>%
 Inv_cassandra_fg %>% 
   janitor::clean_names() %>% 
   dplyr::filter(location == 252) %>% 
-  dplyr::mutate(sku = gsub("-", "", sku),
-                ref = paste0(location, "_", sku),
+  dplyr::mutate(item = gsub("-", "", item),
+                ref = paste0(location, "_", item),
                 balance_hold = "",
                 lot_status = "",
-                on_hand = inventory_qty_cases,
+                on_hand = current_inventory_balance,
                 gl_class = "",
                 planner_name = "") %>% 
-  dplyr::relocate(ref, location, sku, description, inventory_qty_cases, balance_hold, lot_status, on_hand, gl_class, planner_name) %>% 
-  dplyr::select(-location_nm, -inventory_status, -inventory_hold_status) %>% 
+  dplyr::relocate(ref, location, item, na_2, current_inventory_balance, balance_hold, lot_status, on_hand, gl_class, planner_name) %>% 
+  dplyr::select(-na, -inventory_status_code, -hold_status, -campus) %>% 
   dplyr::rename(Location = location,
-                Item = sku, 
-                Description = description,
-                Balance_Usable = inventory_qty_cases,
+                Item = item, 
+                Description = na_2,
+                Balance_Usable = current_inventory_balance,
                 Balance_Hold = balance_hold,
                 Lot_Status = lot_status,
                 On_Hand = on_hand,
