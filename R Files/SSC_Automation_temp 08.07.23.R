@@ -27,6 +27,9 @@ readr::type_convert(ssmetrics_mainboard) -> ssmetrics_mainboard
 
 
 ############################### Phase 1 ############################
+# Campus Abb
+campus_abb <- read_excel("S:/Supply Chain Projects/RStudio/Campus Abb.xlsx")
+
 # Category (From BI) ---- 
 category_bi <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2022/12.19.2022/BI Category and Platform and pack size.xlsx")
 
@@ -1438,6 +1441,16 @@ ssmetrics_final_2 %>%
 ssmetrics_final_2 %>% 
   dplyr::relocate(Location, .after = date) -> ssmetrics_final_2
 
+################### Additional Code revise 8/15/2023 #######################
+campus_abb %>%
+  janitor::clean_names() %>% 
+  dplyr::rename(campus_no = campus,
+                Campus = campus_name) -> campus_abb
+
+ssmetrics_final_2 %>% 
+  dplyr::select(-Campus) %>% 
+  dplyr::left_join(campus_abb) %>% 
+  dplyr::relocate(Campus, .after = campus_no) -> ssmetrics_final_2
 
 
 
