@@ -1472,6 +1472,7 @@ pre_ss_metrics %>%
                 mfg_line_2 = mfg_line,
                 capacity_status_2 = capacity_status) -> pre_ss_metrics
 
+pre_ss_metrics[!duplicated(pre_ss_metrics[,c("Item")]),] -> pre_ss_metrics
 
 ssmetrics_final_2 %>% 
   dplyr::left_join(pre_ss_metrics) %>% 
