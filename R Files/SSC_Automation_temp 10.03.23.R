@@ -1459,6 +1459,30 @@ ssmetrics_final_2 %>%
   dplyr::left_join(campus_abb) %>% 
   dplyr::relocate(Campus, .after = campus_no) -> ssmetrics_final_2
 
+################### Additional Code revise 10/03/2023 #######################
+pre_ss_metrics <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/9.26.23/SS Metrics 0926.xlsx")
+
+pre_ss_metrics %>% 
+  dplyr::select(Item, Category, Platform, macro_platform, Type, Stocking_Type_Description, mfg_line, capacity_status) %>% 
+  dplyr::rename(Category_2 = Category,
+                Platform_2 = Platform,
+                macro_platform_2 = macro_platform,
+                Type_2 = Type,
+                Stocking_Type_Description_2 = Stocking_Type_Description,
+                mfg_line_2 = mfg_line,
+                capacity_status_2 = capacity_status) -> pre_ss_metrics
+
+
+ssmetrics_final_2 %>% 
+  dplyr::left_join(pre_ss_metrics) %>% 
+  dplyr::mutate(Category = ifelse(is.na(Category), Category_2, Category),
+                Platform = ifelse(is.na(Platform), Platform_2, Platform),
+                macro_platform = ifelse(is.na(macro_platform), macro_platform_2, macro_platform),
+                Type = ifelse(is.na(Type), Type_2, Type),
+                Stocking_Type_Description = ifelse(is.na(Stocking_Type_Description), Stocking_Type_Description_2, Stocking_Type_Description),
+                mfg_line = ifelse(is.na(mfg_line), mfg_line_2, mfg_line),
+                capacity_status = ifelse(is.na(capacity_status), capacity_status_2, capacity_status)) %>% 
+  dplyr::select(-Category_2, -Platform_2, -macro_platform_2, -Type_2, -Stocking_Type_Description_2, -mfg_line_2, -capacity_status_2) -> ssmetrics_final_2
 
 
 #####################################################################################################################################
