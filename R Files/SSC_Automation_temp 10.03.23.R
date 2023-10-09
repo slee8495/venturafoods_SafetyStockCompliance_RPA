@@ -242,7 +242,7 @@ exception_report %>%
 
 # (Path revision needed) custord custord ----
 # Open Customer Order File pulling ----  Change Directory ----
-custord <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2023/10.3/open_cust_ord.csv",
+custord <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2023/10.09/open_cust_ord.csv",
                     header = FALSE)
 
 
@@ -275,7 +275,7 @@ reshape2::dcast(custord, ref ~ in_next_7_days, value.var = "Qty", sum) %>%
 
 
 # (Path revision needed) Custord wo ----
-wo <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2023/10.3/wo.csv",
+wo <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2023/10.09/wo.csv",
                header = FALSE)
 
 
@@ -307,7 +307,7 @@ wo %>%
 
 
 # (Path revision needed) Custord Receipt ----
-receipt <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2023/10.3/receipt.csv",
+receipt <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2023/10.09/receipt.csv",
                     header = FALSE)
 
 
@@ -339,7 +339,7 @@ receipt %>%
 
 
 # (Path revision needed) Custord PO ----
-po <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2023/10.3/po.csv",
+po <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2023/10.09/po.csv",
                header = FALSE)
 
 po %>% 
