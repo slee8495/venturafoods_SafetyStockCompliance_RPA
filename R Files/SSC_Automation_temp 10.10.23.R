@@ -265,9 +265,50 @@ custord %>%
   dplyr::mutate(Qty = as.double(Qty),
                 date = as.Date(date)) %>% 
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
+  dplyr::mutate(Location = as.numeric(str_replace_all(Location, "[A-Za-z]", ""))) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item),
                 in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date() +7, "Y", "N")) %>% 
   dplyr::relocate(ref, Item, Location, in_next_7_days) -> custord
+
+
+###################################### Location 39 custord  ######################################
+# https://edgeanalytics.venturafoods.com/MicroStrategyLibrary/app/DF007F1C11E9B3099BB30080EF7513D2/0C5A36EF284A6B95495A2CA203913E1A/W71--K46
+loc_39_bt <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/FG/weekly run data/10.11.2023/BT open order and qty.xlsx")
+
+loc_39_bt[-1, ] -> loc_39_bt
+colnames(loc_39_bt) <- loc_39_bt[1, ]
+loc_39_bt[-1, ] -> loc_39_bt
+
+loc_39_bt %>% 
+  janitor::clean_names() %>% 
+  dplyr::rename(Item = product_label_sku,
+                Location = location,
+                date = sales_order_requested_ship_date,
+                Qty = b_t_open_order_cases) %>% 
+  dplyr::select(Item, Location, date, Qty) %>% 
+  readr::type_convert() %>% 
+  dplyr::mutate(Item = gsub("-", "", Item),
+                ref = paste0(Location, "_", Item),
+                date = as.Date(date, origin = "1899-12-30"),
+                in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date() +7, "Y", "N")) %>% 
+  dplyr::mutate(Location = as.character(Location)) %>% 
+  dplyr::relocate(ref, Item, Location, in_next_7_days, Qty, date) %>% 
+  dplyr::group_by(ref) %>% 
+  dplyr::summarise(Item = first(Item),
+                   Location = first(Location),
+                   in_next_7_days = first(in_next_7_days),
+                   Qty = sum(Qty),
+                   date = first(date)) -> loc_39_bt_2
+
+
+rbind(custord, loc_39_bt_2) %>% 
+  dplyr::group_by(ref) %>% 
+  dplyr::summarise(ref = first(ref),
+                   Item = first(Item),
+                   Location = first(Location),
+                   in_next_7_days = first(in_next_7_days),
+                   Qty = sum(Qty),
+                   date = first(date)) -> custord
 
 # Custord pivot
 reshape2::dcast(custord, ref ~ in_next_7_days, value.var = "Qty", sum) %>% 
