@@ -273,7 +273,7 @@ custord %>%
 
 ###################################### Location 39 custord  ######################################
 # https://edgeanalytics.venturafoods.com/MicroStrategyLibrary/app/DF007F1C11E9B3099BB30080EF7513D2/0C5A36EF284A6B95495A2CA203913E1A/W71--K46
-loc_39_bt <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/BoM version 2/Weekly Run/10.24.2023/BT open order and qty.xlsx")
+loc_39_bt <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/10.24.23/BT open order and qty.xlsx")
 
 loc_39_bt[-1, ] -> loc_39_bt
 colnames(loc_39_bt) <- loc_39_bt[1, ]
