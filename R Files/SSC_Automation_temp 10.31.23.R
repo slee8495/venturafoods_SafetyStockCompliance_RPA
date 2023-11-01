@@ -102,11 +102,12 @@ inventory_model[-1:-7, ] -> inventory_model
 colnames(inventory_model) <- inventory_model[1, ]
 inventory_model[-1, ] -> inventory_model
 
-colnames(inventory_model)[5] <- "ref"
-colnames(inventory_model)[17] <- "mfg_line"
-colnames(inventory_model)[32] <- "max_capacity"
 
 inventory_model %>% 
+  janitor::clean_names() %>%
+  dplyr::rename(ref = ship_ref,
+                mfg_line = mfg_loc_line) %>% 
+  dplyr::rename_with(~ ifelse(startsWith(., "max_capacity"), "max_capacity", .)) %>% 
   dplyr::select(ref, mfg_line, max_capacity) %>% 
   dplyr::mutate(ref = gsub("-", "_", ref)) %>% 
   dplyr::mutate(max_capacity = as.numeric(max_capacity)) -> inventory_model
