@@ -412,38 +412,6 @@ po %>%
                 Y = as.integer(Y)) -> PO_Pivot
 
 
-
-# (Path revision needed) JD - OH ----
-# JDOH <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Maintenance/9.21.22 Margeret report change/JD_OH_SS_20220916_R.xlsx", 
-#                    sheet = "itmbal", col_names = FALSE)
-# 
-# 
-# JDOH[-1, ] -> JDOH
-# colnames(JDOH) <- JDOH[1, ]
-# JDOH[-1, ] -> JDOH
-# 
-# colnames(JDOH)[1] <- "Location"
-# colnames(JDOH)[2] <- "Item"
-# colnames(JDOH)[3] <- "Stock_Type"
-# colnames(JDOH)[4] <- "Description"
-# colnames(JDOH)[5] <- "Balance_Usable"
-# colnames(JDOH)[6] <- "Balance_Hold"
-# colnames(JDOH)[7] <- "Lot_Status"
-# colnames(JDOH)[8] <- "On_Hand"
-# colnames(JDOH)[9] <- "Safety_Stock"
-# colnames(JDOH)[10] <- "GL_Class"
-# colnames(JDOH)[11] <- "Planner_No"
-# colnames(JDOH)[12] <- "Planner_Name"
-# 
-# readr::type_convert(JDOH) -> JDOH
-# 
-# JDOH %>% 
-#   dplyr::filter(Location != 86 & Location!= 226) %>% 
-#   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
-#   dplyr::relocate(ref) -> JDOH
-
-
-
 # New JDOH File ----
 JDOH <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/11.14.23/inv_bal.xlsx")
 
@@ -487,210 +455,12 @@ JDOH %>%
 
 
 ############################################################################################################################
-########################### From here, This should be activated after two locations are resolved ###########################
-############################################################################################################################
-
-# # Inventory Analysis for all locations ----
-# Inv_FG <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Report for all locations - 07.18.22.xlsx", 
-#                      sheet = "FG", col_names = FALSE)
-# 
-# Inv_RM <- read_excel("C:/Users/SLee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Automation/Test/Inventory Report for all locations - 07.18.22.xlsx", 
-#                      sheet = "RM", col_names = FALSE)
-# 
-# 
-# Inv_FG[-1:-3, ] -> Inv_FG
-# Inv_RM[-1:-2, ] -> Inv_RM
-# 
-# colnames(Inv_RM) <- Inv_RM[1, ]
-# Inv_RM[-1, ] -> Inv_RM
-# 
-# colnames(Inv_RM)[2] <- "Location_Name"
-# colnames(Inv_RM)[5] <- "Description"
-# 
-# names(Inv_RM) <- str_replace_all(names(Inv_RM), c(" " = "_"))
-# 
-# colnames(Inv_FG)[1] <- "Location"
-# colnames(Inv_FG)[2] <- "Location_Name"
-# colnames(Inv_FG)[3] <- "Campus"
-# colnames(Inv_FG)[4] <- "Item"
-# colnames(Inv_FG)[5] <- "Description"
-# colnames(Inv_FG)[6] <- "Inventory_Status_Code"
-# colnames(Inv_FG)[7] <- "Hold_Status"
-# colnames(Inv_FG)[8] <- "Current_Inventory_Balance"
-# 
-# dplyr::bind_rows(Inv_RM, Inv_FG) -> Inv_all
-# 
-# Inv_all %>% 
-#   dplyr::mutate(Item = gsub("-", "", Item)) %>% 
-#   dplyr::mutate(ref = paste0(Location, "_", Item),
-#                 mfg_ref = paste0(Campus, "_", Item)) %>% 
-#   dplyr::relocate(ref, mfg_ref) -> Inv_all
-# 
-# readr::type_convert(Inv_all) -> Inv_all
-# 
-# Inv_all %>% 
-#   dplyr::mutate(item_length = nchar(Item)) -> Inv_all
-# 
-# Inv_all %>% filter(item_length == 8) -> fg 
-# Inv_all %>% filter(item_length == 5 | item_length == 9) -> rm
-# 
-# rm %>% 
-#   dplyr::mutate(Item = sub("^0+", "", Item)) -> rm
-# 
-# rbind(rm, fg) -> Inv_all
-# Inv_all %>% 
-#   dplyr::select(-item_length) -> Inv_all
-
-
-
-
-
-# Inv_all %>%
-#   reshape2::dcast(Location + Item + Description ~ Hold_Status, value.var = "Current_Inventory_Balance", sum) %>%
-#   dplyr::rename(Balance_Usable = Useable,
-#                 Hard_Hold = "Hard Hold",
-#                 Soft_Hold = "Soft Hold") %>%
-#   dplyr::mutate(Stock_Type = "",
-#                 Balance_Hold = Hard_Hold + Soft_Hold,
-#                 Lot_Status = "",
-#                 On_Hand = "",
-#                 Safety_Stock = "",
-#                 GL_Class = "",
-#                 Planner_No = "",
-#                 Planner_Name = "",
-#                 ref = paste0(Location, "_", Item)) %>%
-#   dplyr::select(-Hard_Hold, -Soft_Hold) %>%
-#   dplyr::relocate(Location, Item, Stock_Type, Description, Balance_Usable, Balance_Hold)-> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Lot Status
-# Inv_all_pivot_for_JDOH %>%
-#   merge(Inv_all[, c("ref", "Inventory_Status_Code")], by = "ref", all.x = TRUE) %>%
-#   relocate(Inventory_Status_Code, .after = Lot_Status) %>%
-#   dplyr::select(-Lot_Status) %>%
-#   dplyr::rename(Lot_Status = Inventory_Status_Code) %>%
-#   dplyr::relocate(ref) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Stock_Type
-# Inv_all_pivot_for_JDOH %>%
-#   merge(JD_item_branch[, c("ref", "Stocking_Type")], by = "ref", all.x = TRUE) %>%
-#   dplyr::relocate(Stocking_Type, .after = Stock_Type) %>%
-#   dplyr::select(-Stock_Type) %>%
-#   dplyr::rename(Stock_Type = Stocking_Type) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Safety_stock
-# Inv_all_pivot_for_JDOH %>%
-#   merge(exception_report[, c("ref", "Safety_Stock")], by = "ref", all.x = TRUE) %>%
-#   dplyr::relocate(Safety_Stock.y, .after = Safety_Stock.x) %>%
-#   dplyr::select(-Safety_Stock.x) %>%
-#   dplyr::rename(Safety_Stock = Safety_Stock.y) %>%
-#   dplyr::mutate(Safety_Stock = replace(Safety_Stock, is.na(Safety_Stock), 0)) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Planner_No
-# Inv_all_pivot_for_JDOH %>%
-#   merge(exception_report[, c("ref", "Planner")], by = "ref", all.x = TRUE) %>%
-#   dplyr::relocate(Planner, .after = Planner_No) %>%
-#   dplyr::select(-Planner_No) %>%
-#   dplyr::rename(Planner_No = Planner) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Planner_Name
-# Inv_all_pivot_for_JDOH %>%
-#   merge(Planner_address[, c("Planner_No", "Alpha_Name")], by = "Planner_No", all.x = TRUE) %>%
-#   dplyr::relocate(Alpha_Name, .after = Planner_Name) %>%
-#   dplyr::select(-Planner_Name) %>%
-#   dplyr::rename(Planner_Name = Alpha_Name) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Lot Status
-# Inv_all_pivot_for_JDOH %>%
-#   merge(Inv_all[, c("ref", "Inventory_Status_Code")], by = "ref", all.x = TRUE) %>%
-#   relocate(Inventory_Status_Code, .after = Lot_Status) %>%
-#   dplyr::select(-Lot_Status) %>%
-#   dplyr::rename(Lot_Status = Inventory_Status_Code) %>%
-#   dplyr::relocate(ref) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Stock_Type
-# Inv_all_pivot_for_JDOH %>%
-#   merge(JD_item_branch[, c("ref", "Stocking_Type")], by = "ref", all.x = TRUE) %>%
-#   dplyr::relocate(Stocking_Type, .after = Stock_Type) %>%
-#   dplyr::select(-Stock_Type) %>%
-#   dplyr::rename(Stock_Type = Stocking_Type) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Safety_stock
-# Inv_all_pivot_for_JDOH %>%
-#   merge(exception_report[, c("ref", "Safety_Stock")], by = "ref", all.x = TRUE) %>%
-#   dplyr::relocate(Safety_Stock.y, .after = Safety_Stock.x) %>%
-#   dplyr::select(-Safety_Stock.x) %>%
-#   dplyr::rename(Safety_Stock = Safety_Stock.y) %>%
-#   dplyr::mutate(Safety_Stock = replace(Safety_Stock, is.na(Safety_Stock), 0)) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Planner_No
-# Inv_all_pivot_for_JDOH %>%
-#   merge(exception_report[, c("ref", "Planner")], by = "ref", all.x = TRUE) %>%
-#   dplyr::relocate(Planner, .after = Planner_No) %>%
-#   dplyr::select(-Planner_No) %>%
-#   dplyr::rename(Planner_No = Planner) -> Inv_all_pivot_for_JDOH
-# 
-# # Inv_all_pivot_for_JDOH - Planner_Name
-# Inv_all_pivot_for_JDOH %>%
-#   merge(Planner_address[, c("Planner_No", "Alpha_Name")], by = "Planner_No", all.x = TRUE) %>%
-#   dplyr::relocate(Alpha_Name, .after = Planner_Name) %>%
-#   dplyr::select(-Planner_Name) %>%
-#   dplyr::rename(Planner_Name = Alpha_Name) -> Inv_all_pivot_for_JDOH
-# 
-# rbind(JDOH, Inv_all_pivot_for_JDOH) -> JDOH_complete
-# 
-# # JDOH_complete - On_Hand
-# JDOH_complete %>%
-#   dplyr::mutate(On_Hand = Balance_Usable + Balance_Hold) -> JDOH_complete
-
-# ###############################################################################################################################
-# ######################################## From here, this should be deactivated after two location resolved ####################
-# ###############################################################################################################################
-# 
 # (Path revision needed) Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
 Inv_cassandra_fg <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/11.14.23/FG.xlsx",
                                col_names = FALSE)
 
 Inv_cassandra_rm <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/11.14.23/RM.xlsx",
                                col_names = FALSE)
-
-# Insert Mfg_Loc 
-iqr_fg <- readxl::read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/FG/weekly run data/11.07.2023/Finished Goods Inventory Health Adjusted Forward (IQR) NEW TEMPLATE - 11.07.23.xlsx",
-                             sheet = "Location FG")
-
-iqr_rm <- readxl::read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/RM/weekly Report run/11.07.23/Raw Material Inventory Health (IQR) NEW TEMPLATE - 11.07.23.xlsx",
-                             sheet = "RM data")
-
-###
-iqr_fg %>% 
-  data.frame() %>% 
-  dplyr::slice(-1:-2) -> iqr_fg_mfg_site
-
-colnames(iqr_fg_mfg_site) <- iqr_fg_mfg_site[1, ]
-
-iqr_fg_mfg_site %>% 
-  dplyr::slice(-1) %>% 
-  janitor::clean_names() %>% 
-  dplyr::select(ref, campus_ref) %>% 
-  dplyr::mutate(ref = gsub("-", "_", ref),
-                campus_ref = gsub("-", "_", campus_ref))-> iqr_fg_mfg_site
-
-
-
-
-iqr_rm %>% 
-  data.frame() %>% 
-  dplyr::slice(-1:-2) -> iqr_rm_mfg_site
-
-colnames(iqr_rm_mfg_site) <- iqr_rm_mfg_site[1, ]
-
-iqr_rm_mfg_site %>% 
-  dplyr::slice(-1) %>% 
-  janitor::clean_names() %>% 
-  dplyr::select(loc_sku) %>% 
-  dplyr::mutate(loc_sku = gsub("-", "_", loc_sku)) %>% 
-  dplyr::mutate(ref = loc_sku) -> iqr_rm_mfg_site
-
-###
 
 
 Inv_cassandra_fg[-1:-2, ] -> Inv_cassandra_fg
@@ -707,31 +477,32 @@ Inv_cassandra_fg %>%
   janitor::clean_names() %>% 
   data.frame() %>% 
   dplyr::select(location, na, product_label_sku, na_2, inventory_status, inventory_hold_status, inventory_qty_cases) %>% 
-  dplyr::mutate(product_label_sku = gsub("-", "", product_label_sku)) %>% 
-  dplyr::mutate(ref = paste0(location, "_", product_label_sku)) %>% 
-  dplyr::left_join(iqr_fg_mfg_site) %>% 
-  tidyr::separate(campus_ref, c("campus", "dummy_item")) %>% 
-  dplyr::select(-ref, -dummy_item) %>% 
-  dplyr::relocate(campus, .before = product_label_sku) %>% 
-  dplyr::rename(item = product_label_sku,
+  dplyr::left_join(campus_ref %>% select(Location, campus_no) %>% rename(location = Location)) %>% 
+  dplyr::relocate(campus_no, .before = product_label_sku) %>% 
+  dplyr::rename(campus = campus_no,
+                item = product_label_sku,
                 inventory_status_code = inventory_status,
                 hold_status = inventory_hold_status,
                 current_inventory_balance = inventory_qty_cases) -> Inv_cassandra_fg
+
+  
+  
 
 Inv_cassandra_rm %>% 
   janitor::clean_names() %>% 
   data.frame() %>% 
   dplyr::select(location, na_4, item, na_3, inventory_status, inventory_hold_status, inventory_qty_cases) %>% 
-  dplyr::mutate(ref = paste0(location, "_", item)) %>% 
-  dplyr::left_join(iqr_rm_mfg_site) %>% 
-  tidyr::separate(loc_sku, c("campus", "na")) %>% 
-  dplyr::select(-ref, -na) %>% 
-  dplyr::relocate(campus, .before = item) %>% 
+  dplyr::left_join(campus_ref %>% select(Location, campus_no) %>% rename(location = Location)) %>% 
+  dplyr::relocate(campus_no, .before = item) %>% 
   dplyr::rename(na = na_4,
+                campus = campus_no,
                 na_2 = na_3,
                 inventory_status_code = inventory_status,
                 hold_status = inventory_hold_status,
                 current_inventory_balance = inventory_qty_cases) -> Inv_cassandra_rm
+
+
+  
 
 
 
