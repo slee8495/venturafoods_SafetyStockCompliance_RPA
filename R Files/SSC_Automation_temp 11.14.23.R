@@ -456,50 +456,58 @@ JDOH %>%
 
 ############################################################################################################################
 # (Path revision needed) Change directory (MicroStrategy Inventory Analysis from Cassandra) ----
-Inv_cassandra_fg <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/11.14.23/FG.xlsx",
+Inv_cassandra_fg <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/11.14.23/FG_2.xlsx",
                                col_names = FALSE)
 
-Inv_cassandra_rm <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/11.14.23/RM.xlsx",
+Inv_cassandra_rm <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2023/11.14.23/RM_2.xlsx",
                                col_names = FALSE)
 
 
-Inv_cassandra_fg[-1:-2, ] -> Inv_cassandra_fg
+
 colnames(Inv_cassandra_fg) <- Inv_cassandra_fg[1, ]
 Inv_cassandra_fg[-1, ] -> Inv_cassandra_fg
 
 
-Inv_cassandra_rm[-1:-2, ] -> Inv_cassandra_rm
+
 colnames(Inv_cassandra_rm) <- Inv_cassandra_rm[1, ]
 Inv_cassandra_rm[-1, ] -> Inv_cassandra_rm
 
 ### Here, you take only what you need and then keep going. 
 Inv_cassandra_fg %>% 
   janitor::clean_names() %>% 
-  data.frame() %>% 
-  dplyr::select(location, na, product_label_sku, na_2, inventory_status, inventory_hold_status, inventory_qty_cases) %>% 
-  dplyr::left_join(campus_ref %>% select(Location, campus_no) %>% rename(location = Location)) %>% 
-  dplyr::relocate(campus_no, .before = product_label_sku) %>% 
-  dplyr::rename(campus = campus_no,
-                item = product_label_sku,
-                inventory_status_code = inventory_status,
-                hold_status = inventory_hold_status,
-                current_inventory_balance = inventory_qty_cases) -> Inv_cassandra_fg
+  dplyr::left_join(campus_ref %>% select(Location, campus_no) %>% rename(location = Location, campus = campus_no)) %>% 
+  readr::type_convert() %>% 
+  dplyr::mutate(current_inventory_balance = ifelse(is.na(current_inventory_balance), 0, current_inventory_balance)) %>% 
+  dplyr::mutate(product_label_sku = gsub("-", "", product_label_sku),
+                ref = paste0(location, "_", product_label_sku),
+                mfg_ref = paste0(campus, "_", product_label_sku)) %>% 
+  dplyr::rename(Location = location,
+                Location_Name = na,
+                Item = product_label_sku,
+                Description = na_2,
+                Inventory_Status_Code = inventory_status_code,
+                Hold_Status = inventory_hold_status,
+                Current_Inventory_Balance = current_inventory_balance) %>% 
+  dplyr::relocate(Location, Location_Name, campus, Item, Description, Inventory_Status_Code, Hold_Status, Current_Inventory_Balance, ref, mfg_ref) -> Inv_cassandra_fg
 
   
   
 
 Inv_cassandra_rm %>% 
-  janitor::clean_names() %>% 
-  data.frame() %>% 
-  dplyr::select(location, na_4, item, na_3, inventory_status, inventory_hold_status, inventory_qty_cases) %>% 
-  dplyr::left_join(campus_ref %>% select(Location, campus_no) %>% rename(location = Location)) %>% 
-  dplyr::relocate(campus_no, .before = item) %>% 
-  dplyr::rename(na = na_4,
-                campus = campus_no,
-                na_2 = na_3,
-                inventory_status_code = inventory_status,
-                hold_status = inventory_hold_status,
-                current_inventory_balance = inventory_qty_cases) -> Inv_cassandra_rm
+  janitor::clean_names()  %>% 
+  dplyr::left_join(campus_ref %>% select(Location, campus_no) %>% rename(location = Location, campus = campus_no)) %>% 
+  readr::type_convert() %>% 
+  dplyr::mutate(current_inventory_balance = ifelse(is.na(current_inventory_balance), 0, current_inventory_balance)) %>% 
+  dplyr::mutate(ref = paste0(location, "_", item),
+                mfg_ref = paste0(campus, "_", item)) %>% 
+  dplyr::rename(Location = location,
+                Location_Name = na,
+                Item = item,
+                Description = na_2,
+                Inventory_Status_Code = inventory_status_code,
+                Hold_Status = inventory_hold_status,
+                Current_Inventory_Balance = current_inventory_balance) %>% 
+  dplyr::relocate(Location, Location_Name, campus, Item, Description, Inventory_Status_Code, Hold_Status, Current_Inventory_Balance, ref, mfg_ref)  -> Inv_cassandra_rm
 
 
   
@@ -509,14 +517,6 @@ Inv_cassandra_rm %>%
 
 rbind(Inv_cassandra_fg, Inv_cassandra_rm) -> Inv_cassandra
 
-Inv_cassandra %>% 
-  dplyr::rename(Location = location,
-                Item = item,
-                Location_Name = na,
-                Inventory_Status_Code = inventory_status_code,
-                Hold_Status = hold_status,
-                Current_Inventory_Balance = current_inventory_balance,
-                Description = na_2) -> Inv_cassandra
 
 Location_temp <- 226
 campus_temp <- 86
@@ -649,11 +649,11 @@ Inv_cassandra_fg %>%
                 on_hand = current_inventory_balance,
                 gl_class = "",
                 planner_name = "") %>% 
-  dplyr::relocate(ref, location, item, na_2, current_inventory_balance, balance_hold, lot_status, on_hand, gl_class, planner_name) %>% 
-  dplyr::select(-na, -inventory_status_code, -hold_status, -campus) %>% 
+  dplyr::relocate(ref, location, item, description, current_inventory_balance, balance_hold, lot_status, on_hand, gl_class, planner_name) %>% 
+  dplyr::select(-inventory_status_code, -hold_status, -campus) %>% 
   dplyr::rename(Location = location,
                 Item = item, 
-                Description = na_2,
+                Description = description,
                 Balance_Usable = current_inventory_balance,
                 Balance_Hold = balance_hold,
                 Lot_Status = lot_status,
@@ -699,7 +699,8 @@ loc_252_for_jdoh %>%
 # Relocation 252 File
 loc_252_for_jdoh %>% 
   dplyr::relocate(ref, Location, Item, Stock_Type, Description, Balance_Usable, Balance_Hold, Lot_Status, On_Hand, Safety_Stock, GL_Class,
-                  Planner_No, Planner_Name) -> loc_252_for_jdoh
+                  Planner_No, Planner_Name) %>% 
+  dplyr::select(-location_name, -mfg_ref)-> loc_252_for_jdoh
 
 
 
