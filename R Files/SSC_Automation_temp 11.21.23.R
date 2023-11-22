@@ -6,14 +6,6 @@ library(writexl)
 library(reshape2)
 library(skimr)
 
-### ** For NA values in "Type", "Category", "Platform" -> they are new Items. look up yourself to verify ** ##
-
-
-# ssmetrics_mainboard <- read_excel("S:/Supply Chain Projects/LOGISTICS/SCP/Cost Saving Reporting/SS Compliance/megadata.7.11.22.xlsx",
-#                         col_names = FALSE)
-# save(ssmetrics_mainboard, file = "ssmetrics_megadata.7.11.22.rds")
-
-
 # (Path revision needed) load main board (mega data) ----
 load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_11_14_23.rds")
 
@@ -454,7 +446,8 @@ JDOH %>%
 JDOH %>% 
   dplyr::filter(Location != 86 & Location!= 226) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
-  dplyr::relocate(ref) -> JDOH
+  dplyr::relocate(ref) %>% 
+  dplyr::mutate(On_Hand = ifelse(On_Hand < 0, 0, On_Hand)) -> JDOH
 
 
 
@@ -521,6 +514,10 @@ Inv_cassandra -> Inv_all
 
 
 readr::type_convert(Inv_all) -> Inv_all
+
+
+
+
 
 # Inv_all_pivot
 Inv_all %>%
