@@ -222,10 +222,11 @@ colnames(exception_report)[32] <- "null"
 names(exception_report) <- str_replace_all(names(exception_report), c(" " = "_"))
 
 
-exception_report %<>% 
+exception_report %>% 
   dplyr::mutate(ref = paste0(B_P, "_", ItemNo)) %>% 
-  dplyr::relocate(ref) 
+  dplyr::relocate(ref) -> exception_report
 
+exception_report[!duplicated(exception_report[,c("ref")]),] -> exception_report
 
 # exception report Planner NA to 0
 exception_report %>% 
