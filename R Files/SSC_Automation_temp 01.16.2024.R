@@ -1377,6 +1377,13 @@ ssmetrics_final_2 %>%
   dplyr::mutate(Label = ifelse(is.na(Label), "NA", Label)) -> ssmetrics_final_2
 
 
+####### 01/16/2024 #######
+ssmetrics_final_2 %>% 
+  dplyr::mutate(campus = ifelse(location == "430", 43, campus),
+                campus_name = ifelse(location == "430", "BHM", campus_name)) %>% 
+  dplyr::mutate(campus_ref = paste0(campus, "_", item)) -> ssmetrics_final_2
+
+
 
 #####################################################################################################################################
 #####################################################################################################################################
