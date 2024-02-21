@@ -6,6 +6,8 @@ library(writexl)
 library(reshape2)
 library(skimr)
 
+specific_date <- as.Date("2024-02-13")
+
 # (Path revision needed) load main board (mega data) ----
 load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_02_06_2024.rds")
 
@@ -260,7 +262,7 @@ custord %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(Location = as.numeric(str_replace_all(Location, "[A-Za-z]", ""))) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item),
-                in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date() +7, "Y", "N")) %>% 
+                in_next_7_days = ifelse(date >= specific_date & date < specific_date +7, "Y", "N")) %>% 
   dplyr::relocate(ref, Item, Location, in_next_7_days) -> custord
 
 
@@ -283,7 +285,7 @@ loc_39_bt %>%
   dplyr::mutate(Item = gsub("-", "", Item),
                 ref = paste0(Location, "_", Item),
                 date = as.Date(date, origin = "1899-12-30"),
-                in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date() +7, "Y", "N")) %>% 
+                in_next_7_days = ifelse(date >= specific_date & date < specific_date +7, "Y", "N")) %>% 
   dplyr::mutate(Location = as.character(Location)) %>% 
   dplyr::relocate(ref, Item, Location, in_next_7_days, Qty, date) %>% 
   dplyr::group_by(ref) %>% 
@@ -332,7 +334,7 @@ wo %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date()+7, "Y", "N") )-> wo
+  dplyr::mutate(in_next_7_days = ifelse(date >= specific_date & date < specific_date+7, "Y", "N") )-> wo
 
 # wo pivot
 wo %>% 
@@ -364,7 +366,7 @@ receipt %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date < Sys.Date()+7, "Y", "N") ) -> receipt
+  dplyr::mutate(in_next_7_days = ifelse(date >= specific_date & date < specific_date+7, "Y", "N") ) -> receipt
 
 
 
@@ -395,7 +397,7 @@ po %>%
   dplyr::mutate(Location = sub("^0+", "", Location)) %>% 
   dplyr::mutate(ref = paste0(Location, "_", Item)) %>% 
   dplyr::relocate(ref, Item, Location) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= Sys.Date() & date< Sys.Date() + 7, "Y", "N") ) -> po
+  dplyr::mutate(in_next_7_days = ifelse(date >= specific_date & date< specific_date + 7, "Y", "N") ) -> po
 
 
 # PO_Pivot 
@@ -759,7 +761,7 @@ ssmetrics[-1, ] -> ssmetrics
 readr::type_convert(ssmetrics) -> ssmetrics
 
 ssmetrics %>% 
-  dplyr::mutate(date = Sys.Date()) %>% 
+  dplyr::mutate(date = specific_date) %>% 
   dplyr::relocate(date, .after = ref) -> ssmetrics
 
 
@@ -1007,7 +1009,7 @@ ssmetrics_final %>%
 ssmetrics_final %>% 
   mutate(month = month(date),
          year = year(date),
-         FY = ifelse(Sys.Date() < make_date(year = year(Sys.Date()), month = 4, day = 1),
+         FY = ifelse(specific_date < make_date(year = year(specific_date), month = 4, day = 1),
                      paste("FY", year(date)),
                      paste("FY", year(date) + 1))) -> ssmetrics_final
 
