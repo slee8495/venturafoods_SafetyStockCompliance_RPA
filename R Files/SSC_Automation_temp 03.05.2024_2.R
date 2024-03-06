@@ -1210,6 +1210,49 @@ ssmetrics_final_2 %>%
   dplyr::relocate(c(campus, campus_name), .after = Location_Name) -> ssmetrics_final_2
 
 
+####### 03/06/2024 #######
+
+ssmetrics_final_2 %>%
+  left_join(ssmetrics_pre_1 %>% select(Category, Item), by = "Item") %>%
+  dplyr::mutate(Category = ifelse(is.na(Category.x), Category.y, Category.x)) %>%
+  dplyr::select(-Category.y, -Category.x) %>% 
+  dplyr::relocate(c(Category), .after = year) -> ssmetrics_final_2
+
+ssmetrics_final_2 %>%
+  left_join(ssmetrics_pre_1 %>% select(Platform, Item), by = "Item") %>%
+  dplyr::mutate(Platform = ifelse(is.na(Platform.x), Platform.y, Platform.x)) %>%
+  dplyr::select(-Platform.y, -Platform.x) %>% 
+  dplyr::relocate(c(Platform), .after = Category) -> ssmetrics_final_2
+
+
+# Apply the conditional changes using dplyr
+ssmetrics_final_2 %>%
+  mutate(
+    Category = ifelse(is.na(Category) & startsWith(Description, "RSC"), "packaging", Category),
+    Platform = ifelse(is.na(Platform) & startsWith(Description, "RSC"), "packaging", Platform),
+    macro_platform = ifelse(is.na(macro_platform) & startsWith(Description, "RSC"), "packaging", macro_platform),
+    Stocking_Type_Description = ifelse(is.na(Stocking_Type_Description) & startsWith(Description, "RSC"), "packaging", Stocking_Type_Description),
+    capacity_status = ifelse(is.na(capacity_status) & startsWith(Description, "RSC"), "packaging", capacity_status),
+    oil_allocation = ifelse(is.na(oil_allocation) & startsWith(Description, "RSC"), "packaging", oil_allocation),
+    Type = ifelse(is.na(Type) & startsWith(Description, "RSC"), "Raw Material", Type),
+    MPF = ifelse(is.na(MPF) & startsWith(Description, "RSC"), "PKG", MPF),
+    mfg_line = ifelse(is.na(mfg_line) & startsWith(Description, "RSC"), "PKG", mfg_line)
+  ) -> ssmetrics_final_2
+
+
+ssmetrics_final_2 %>%
+  left_join(exception_report %>% 
+              select(ItemNo, Description) %>% 
+              rename(Item = ItemNo) %>% 
+              distinct(), 
+            by = "Item") %>%
+  mutate(Description = ifelse(is.na(Description.x), Description.y, Description.x)) %>%
+  select(-Description.x, -Description.y) %>% 
+  relocate(Description, .after = Item) -> ssmetrics_final_2
+
+
+  
+  
 #####################################################################################################################################
 #####################################################################################################################################
 #####################################################################################################################################
