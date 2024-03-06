@@ -473,6 +473,7 @@ JDOH_complete %>%
   dplyr::mutate(ref = paste0(location, "_", item)) %>% 
   dplyr::select(ref, location, item, description, current_inventory_balance, inventory_hold_status) %>% 
   dplyr::mutate(current_inventory_balance = as.double(current_inventory_balance)) %>% 
+  dplyr::mutate(on_hand = current_inventory_balance) %>%
   dplyr::mutate(current_inventory_balance = ifelse(inventory_hold_status == "Hard Hold", 0, current_inventory_balance)) %>% 
   dplyr::select(-inventory_hold_status)-> JDOH_complete
 
@@ -486,7 +487,8 @@ JDOH_complete %>%
   dplyr::left_join(Planner_address) %>% 
   dplyr::mutate(Alpha_Name = replace(Alpha_Name, is.na(Alpha_Name), 0)) %>% 
   dplyr::rename(Planner_Name = Alpha_Name,
-                On_Hand = current_inventory_balance,
+                Balance_Usable = current_inventory_balance,
+                On_Hand = on_hand,
                 Description = description,
                 Item = item,
                 Location = location) -> JDOH_complete
@@ -510,13 +512,13 @@ loc_430_for_jdoh[-nrow(loc_430_for_jdoh), ] -> loc_430_for_jdoh
 
 loc_430_for_jdoh %>% 
   janitor::clean_names() %>% 
-  dplyr::select(sku, base_on_hand_qty) %>% 
+  dplyr::select(sku, base_available_qty, base_on_hand_qty) %>% 
   tidyr::separate(sku, c("1", "2", "3"), sep = "-") %>% 
   janitor::clean_names() %>% 
-  dplyr::select(x1, base_on_hand_qty) %>% 
+  dplyr::select(x1, base_available_qty, base_on_hand_qty) %>% 
   dplyr::rename(Item = x1,
-                Balance_Usable = base_on_hand_qty) %>% 
-  dplyr::mutate(On_Hand = Balance_Usable) %>% 
+                Balance_Usable = base_available_qty,
+                On_Hand = base_on_hand_qty) %>% 
   dplyr::mutate(Balance_Usable = as.numeric(Balance_Usable),
                 On_Hand = as.numeric(On_Hand)) %>% 
   dplyr::mutate(ref = paste0("430", "_", Item),
@@ -525,14 +527,41 @@ loc_430_for_jdoh %>%
                 Planner_No = "113444",
                 Planner_Name = "WHITE, STEPHANIE",
                 Description = "") %>% 
-  dplyr::relocate(ref, Location, Item, Description, On_Hand, Safety_Stock, Planner_No, Planner_Name) %>% 
-  dplyr::mutate(Safety_Stock = as.double(Safety_Stock)) %>% 
-  dplyr::select(-Balance_Usable) -> loc_430_for_jdoh
+  dplyr::relocate(ref, Location, Item, Description, Balance_Usable, On_Hand, Safety_Stock, Planner_No, Planner_Name) %>% 
+  dplyr::mutate(Safety_Stock = as.double(Safety_Stock))  -> loc_430_for_jdoh
 
 
 
 
 rbind(JDOH_complete, loc_430_for_jdoh) -> JDOH_complete
+
+
+
+########################################################## Bring Inv_bal over here ########################################################
+inv_bal <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/02.27.2024/inv_bal.xlsx")
+inv_bal[-1:-2, ] -> inv_bal
+colnames(inv_bal) <- inv_bal[1, ]
+inv_bal[-1, ] -> inv_bal
+
+
+inv_bal %>% 
+  janitor::clean_names() %>% 
+  readr::type_convert() %>% 
+  dplyr::mutate(bp = as.numeric(bp)) %>% 
+  dplyr::mutate(ref = paste0(bp, "_", item)) %>%
+  dplyr::select(ref, type, gl_class, hard_hold) %>% 
+  dplyr::rename(Stock_Type = type,
+                GL_Class = gl_class,
+                Balance_Hold = hard_hold) %>% 
+  dplyr::distinct() -> inv_bal
+
+
+JDOH_complete %>% 
+  dplyr::left_join(inv_bal, by = "ref") %>% 
+  dplyr::mutate(Lot_Status = "") %>% 
+  dplyr::select(ref, Location, Item, Stock_Type, Description, Balance_Usable, Balance_Hold, Lot_Status, On_Hand, Safety_Stock, GL_Class, Planner_No, Planner_Name) -> JDOH_complete
+
+
 
 
 ################################################################################################################################
@@ -549,9 +578,14 @@ ssmetrics %>%
   dplyr::mutate(ref = "",
                 Location = "",
                 Item = "",
+                Stock_Type = "",
                 Description = "",
+                Balance_Usable = "",
+                Balance_Hold = "",
+                Lot_Status = "",
                 On_Hand = "",
                 Safety_Stock = "",
+                GL_Class = "",
                 Planner_No = "",
                 Planner_Name = "") -> ssmetrics
 
@@ -1195,7 +1229,7 @@ ssmetrics_final_2 %>%
 #####################################################################################################################################
 
 
-writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/02.27.2024/SS Metrics 0227.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/02.27.2024/SS Metrics 0227_2.xlsx") 
 
 
 
