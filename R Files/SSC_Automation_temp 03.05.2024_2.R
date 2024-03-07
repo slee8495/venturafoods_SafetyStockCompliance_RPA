@@ -1225,7 +1225,47 @@ ssmetrics_final_2 %>%
   dplyr::relocate(c(Platform), .after = Category) -> ssmetrics_final_2
 
 
-# Apply the conditional changes using dplyr
+
+
+# Macro Platform Fix
+ssmetrics_final_2 %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "Finished Goods" | is.na(macro_platform), "test", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "Packaging" | Platform == "Ingredients" | Platform == "Label", Platform, "test")) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "BOTTLES" | Platform == "JARS", "BOTTLES/JARS", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "ALL SOUP BASES, FLAVORS" | Platform == "PAN COATING", "CO-PACK", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "DRUMS, TOTES", "DRUMS, TOTES", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "JUGS - W/ HANDLE", "JUGS", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "LARGE POUCH > 6 oz" | Platform == "NGSD-NEXT GEN SAUCE DISPENSER", "LARGE POUCH", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "PC CUP - 37MM" | Platform == "PC CUP - 51MM" | 
+                                          Platform == "PC CUP - 60MM" | Platform == "PC CUP - 75MM" | Platform == "PC CUP - RECTG" | 
+                                          Platform == "PC POUCH <= 6 OZ, 3 SIDE SEAL" | Platform == "PC POUCH <= 6 OZ, 4 SIDE SEAL", "PC'S", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "PRINTS" | Platform == "QTRS", "PRINTS/QTRS", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "TRAYS", "TRAYS", macro_platform)) %>% 
+  dplyr::mutate(macro_platform = ifelse(macro_platform == "test" | Platform == "TUB/BOWL - OVAL <= 5#" | Platform == "TUB/BOWL - ROUND <= 5#" | 
+                                          Platform == "TUB/BOWL - SQUARE <= 5#" | Platform == "TUBS, PAILS, CARTONS > 5#", "TUB/BOWL", macro_platform)) -> ssmetrics_final_2
+
+
+
+ssmetrics_final_2 %>%
+  left_join(ssmetrics_pre_1 %>% select(Type, Item), by = "Item") %>%
+  dplyr::mutate(Type = ifelse(is.na(Type.x), Type.y, Type.x)) %>%
+  dplyr::select(-Type.y, -Type.x) %>% 
+  dplyr::relocate(c(Type), .after = Description) -> ssmetrics_final_2
+
+ssmetrics_final_2 %>%
+  left_join(ssmetrics_pre_1 %>% select(Stocking_type_description, Item) %>% rename(Stocking_Type_Description = Stocking_type_description), by = "Item") %>%
+  dplyr::mutate(Stocking_Type_Description = ifelse(is.na(Stocking_Type_Description.x), Stocking_Type_Description.y, Stocking_Type_Description.x)) %>%
+  dplyr::select(-Stocking_Type_Description.y, -Stocking_Type_Description.x) %>% 
+  dplyr::relocate(c(Stocking_Type_Description), .after = Type) -> ssmetrics_final_2
+
+ssmetrics_final_2 %>%
+  mutate(mfg_line = ifelse(is.na(mfg_line), MPF, mfg_line))  -> ssmetrics_final_2
+
+
+
+
+
+
 ssmetrics_final_2 %>%
   mutate(
     Category = ifelse(is.na(Category) & startsWith(Description, "RSC"), "packaging", Category),
@@ -1250,15 +1290,30 @@ ssmetrics_final_2 %>%
   select(-Description.x, -Description.y) %>% 
   relocate(Description, .after = Item) -> ssmetrics_final_2
 
+####### 03/06/2024 #######
+ssmetrics_final_2 %>% 
+  dplyr::mutate(campus_ss_on_hand = ifelse(campus_total_available > campus_ss, campus_ss, campus_total_available)) %>% 
+  dplyr::relocate(campus_ss_on_hand, .after = campus_total_available)-> ssmetrics_final_2
 
+ssmetrics_final_2 %>% 
+  dplyr::mutate(type_2 = ifelse(Type == "Packaging", "Raw Material", 
+                                ifelse(Type == "Label", "Raw Material",
+                                       ifelse(Type == "Ingredients", "Raw Material", Type))),
+                stocking_type_2 = ifelse(type_2 == "Raw Material", Category, Stocking_Type_Description)) %>% 
+  dplyr::select(-Type, -Stocking_Type_Description) %>% 
+  dplyr::rename(Type = type_2,
+                Stocking_Type_Description = stocking_type_2) %>% 
+  dplyr::relocate(c(Type, Stocking_Type_Description), .after = Description) -> ssmetrics_final_2
+
+ssmetrics_final_2 %>% 
+  dplyr::mutate(campus_ref = gsub("_", "-", campus_ref)) -> ssmetrics_final_2
   
-  
 #####################################################################################################################################
 #####################################################################################################################################
 #####################################################################################################################################
 
 
-writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.05.2024/SS Metrics 0305.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.05.2024/SS Metrics 0305_2.xlsx") 
 
 
 
