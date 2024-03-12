@@ -424,6 +424,7 @@ JDOH_complete[-1, ] -> JDOH_complete
 JDOH_complete %>% 
   janitor::clean_names() %>% 
   dplyr::mutate(item = gsub("-", "", item)) %>% 
+  dplyr::mutate(item = str_replace(item, "^0+(?!$)", "")) %>% 
   dplyr::mutate(ref = paste0(location, "_", item)) %>% 
   dplyr::select(ref, inventory_hold_status, current_inventory_balance) %>% 
   dplyr::mutate(current_inventory_balance = as.double(current_inventory_balance)) -> JDOH_complete_1
@@ -449,6 +450,7 @@ JDOH_complete_1 %>%
 JDOH_complete %>% 
   janitor::clean_names() %>% 
   dplyr::mutate(item = gsub("-", "", item)) %>% 
+  dplyr::mutate(item = str_replace(item, "^0+(?!$)", "")) %>% 
   dplyr::mutate(ref = paste0(location, "_", item)) %>% 
   dplyr::select(ref, location, item, description) %>% 
   dplyr::distinct() %>% 
@@ -507,6 +509,7 @@ loc_430_for_jdoh %>%
                 On_Hand = base_on_hand_qty) %>% 
   dplyr::mutate(Balance_Usable = as.numeric(Balance_Usable),
                 On_Hand = as.numeric(On_Hand)) %>% 
+  dplyr::mutate(Item = str_replace(Item, "^0+(?!$)", "")) %>% 
   dplyr::mutate(ref = paste0("430", "_", Item),
                 Location = "430",
                 Safety_Stock = 0,
@@ -539,15 +542,56 @@ inv_bal %>%
   dplyr::select(ref, type, gl_class) %>% 
   dplyr::rename(Stock_Type = type,
                 GL_Class = gl_class) %>% 
-  dplyr::distinct() -> inv_bal
+  dplyr::distinct() -> inv_bal_1
 
 
 JDOH_complete %>% 
-  dplyr::left_join(inv_bal, by = "ref") %>% 
+  dplyr::left_join(inv_bal_1, by = "ref") %>% 
   dplyr::mutate(Lot_Status = "") %>% 
   dplyr::select(ref, Location, Item, Stock_Type, Description, Balance_Usable, Balance_Hold, Lot_Status, On_Hand, Safety_Stock, GL_Class, Planner_No, Planner_Name) -> JDOH_complete
 
 
+
+
+
+################## 25, 55 label inventory ####################
+
+inv_bal %>% 
+  janitor::clean_names() %>% 
+  readr::type_convert() %>%
+  dplyr::mutate(bp = as.double(bp)) %>% 
+  dplyr::mutate(ref = paste0(bp, "_", item)) %>% 
+  dplyr::mutate(item = as.double(item)) %>% 
+  dplyr::filter(!is.na(item)) %>% 
+  dplyr::filter(bp %in% c(25, 55)) %>% 
+  dplyr::select(ref, bp, item, description, usable, hard_hold, inventory, stock, gl_class, planner, na) %>% 
+  dplyr::left_join(exception_report %>% 
+                     dplyr::select(ItemNo, MPF_or_Line) %>% 
+                     dplyr::rename(item = ItemNo,
+                                   label = MPF_or_Line) %>% 
+                     dplyr::mutate(item = as.double(item)) %>% 
+                     dplyr::filter(label == "LBL") %>% 
+                     dplyr::distinct(item, label), by = "item") %>% 
+  dplyr::filter(!is.na(label)) %>% 
+  dplyr::select(-label) %>% 
+  dplyr::rename(Location = bp, 
+                Item = item, 
+                Description = description,
+                Balance_Usable = usable,
+                Balance_Hold = hard_hold,
+                On_Hand = inventory,
+                Safety_Stock = stock,
+                GL_Class = gl_class,
+                Planner_No = planner,
+                Planner_Name = na) %>% 
+  replace_na(list(Balance_Usable = 0, Balance_Hold = 0, On_Hand = 0, Safety_Stock = 0)) %>% 
+  dplyr::mutate(Stock_Type = "",
+                Lot_Status = "") %>% 
+  dplyr::relocate(Stock_Type, .after = Item) %>% 
+  dplyr::relocate(Lot_Status, .after = Balance_Hold) -> loc_25_55_for_jdoh
+ 
+
+rbind(JDOH_complete, loc_25_55_for_jdoh) -> JDOH_complete
 
 
 ################################################################################################################################
