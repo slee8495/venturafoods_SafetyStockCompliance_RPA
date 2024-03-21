@@ -6,10 +6,10 @@ library(writexl)
 library(reshape2)
 library(skimr)
 
-specific_date <- as.Date("2024-03-12")
+specific_date <- as.Date("2024-03-19")
 
 # (Path revision needed) load main board (mega data) ----
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_03_05_2024.rds")
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_03_12_2024.rds")
 
 
 ssmetrics_mainboard %>%
@@ -101,7 +101,7 @@ inventory_model %>%
   dplyr::rename(ref = ship_ref,
                 mfg_line = mfg_loc_line) %>%
   dplyr::rename_with(~ ifelse(startsWith(., "max_capacity"), "max_capacity", .)) %>%
-  dplyr::rename(max_capacity = max_inventory) %>% 
+  dplyr::rename(max_capacity = psa_percent_3_mos_average_by_mfg_platform) %>% 
   dplyr::select(ref, mfg_line, max_capacity) %>% 
   dplyr::mutate(ref = gsub("-", "_", ref)) %>% 
   dplyr::mutate(max_capacity = as.numeric(max_capacity)) -> inventory_model
@@ -160,7 +160,7 @@ Planner_address %>%
   dplyr::select(1:2) -> Planner_address
 
 # (Path revision needed) JDE VF Item Branch - Work with Item Branch ----
-JD_item_branch <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.12.2024/Item_Branch.xlsx",
+JD_item_branch <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.19.2024/Item_Branch.xlsx",
                              col_names = FALSE)
 
 colnames(JD_item_branch) <- JD_item_branch[1, ]
@@ -179,7 +179,7 @@ JD_item_branch %>%
   dplyr::mutate(ref = paste0(Location, "_", Item)) -> JD_item_branch
 
 # (Path revision needed) exception report ----
-exception_report <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.12.2024/exception report.xlsx",                                
+exception_report <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.19.2024/exception report.xlsx",                                
                                sheet = "Sheet1")
 
 readr::type_convert(exception_report) -> exception_report
@@ -239,7 +239,7 @@ exception_report %>%
 
 # (Path revision needed) custord custord ----
 # Open Customer Order File pulling ----  Change Directory ----
-custord <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2024/03.12/open_cust_ord.csv",
+custord <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2024/03.19/open_cust_ord.csv",
                     header = FALSE)
 
 
@@ -269,7 +269,7 @@ custord %>%
 
 ###################################### Location 39 custord  ######################################
 # https://edgeanalytics.venturafoods.com/MicroStrategyLibrary/app/DF007F1C11E9B3099BB30080EF7513D2/0C5A36EF284A6B95495A2CA203913E1A/W71--K46
-loc_39_bt <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.12.2024/BT open order and qty.xlsx")
+loc_39_bt <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.19.2024/BT open order and qty.xlsx")
 
 loc_39_bt[-1, ] -> loc_39_bt
 colnames(loc_39_bt) <- loc_39_bt[1, ]
@@ -313,7 +313,7 @@ reshape2::dcast(custord, ref ~ in_next_7_days, value.var = "Qty", sum) %>%
 
 
 # (Path revision needed) Custord wo ----
-wo <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2024/03.12/wo.csv",
+wo <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2024/03.19/wo.csv",
                header = FALSE)
 
 
@@ -345,7 +345,7 @@ wo %>%
 
 
 # (Path revision needed) Custord Receipt ----
-receipt <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2024/03.12/receipt.csv",
+receipt <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2024/03.19/receipt.csv",
                     header = FALSE)
 
 
@@ -377,7 +377,7 @@ receipt %>%
 
 
 # (Path revision needed) Custord PO ----
-po <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2024/03.12/po.csv",
+po <- read.csv("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/DSXIE/2024/03.19/po.csv",
                header = FALSE)
 
 po %>% 
@@ -565,7 +565,7 @@ rbind(JDOH_complete, JDOH_complete_2) -> JDOH_complete
 
 
 # Add Location 430
-loc_430_for_jdoh <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.12.2024/430.xlsx")
+loc_430_for_jdoh <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.19.2024/430.xlsx")
 loc_430_for_jdoh[-1:-3, ] -> loc_430_for_jdoh
 colnames(loc_430_for_jdoh) <- loc_430_for_jdoh[1, ]
 loc_430_for_jdoh[-1, ] -> loc_430_for_jdoh
@@ -664,6 +664,33 @@ jde_inv_for_25_55_label %>%
 
 
 rbind(JDOH_complete, jde_inv_for_25_55_label) -> JDOH_complete
+
+
+## Bring over Inv_Bal ##
+inv_bal <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.19.2024/inv_bal.xlsx")
+inv_bal[-1:-2, ] -> inv_bal
+colnames(inv_bal) <- inv_bal[1, ]
+inv_bal[-1, ] -> inv_bal
+
+
+inv_bal %>% 
+  janitor::clean_names() %>% 
+  readr::type_convert() %>% 
+  dplyr::mutate(bp = as.numeric(bp)) %>% 
+  dplyr::mutate(ref = paste0(bp, "_", item)) %>%
+  dplyr::select(ref, type, gl_class) %>% 
+  dplyr::rename(Stock_Type = type,
+                GL_Class = gl_class) %>% 
+  dplyr::distinct() -> inv_bal_1
+
+
+JDOH_complete %>% 
+  dplyr::left_join(inv_bal_1, by = "ref") %>% 
+  dplyr::mutate(Lot_Status = "") %>% 
+  dplyr::select(ref, Location, Item, Stock_Type, Description, Balance_Usable, Balance_Hold, Lot_Status, On_Hand, Safety_Stock, GL_Class, Planner_No, Planner_Name) -> JDOH_complete
+
+
+
 
 
 ################################################################################################################################
@@ -1102,7 +1129,7 @@ ssmetrics_final_2 %>%
 
 # completed sku list import (fix Category & Platform) ----
 # https://edgeanalytics.venturafoods.com/MicroStrategy/servlet/mstrWeb
-completed_sku_list <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.12.2024/Completed SKU list - Linda.xlsx")
+completed_sku_list <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.19.2024/Completed SKU list - Linda.xlsx")
 completed_sku_list[-1:-2, ]  %>% 
   janitor::clean_names() %>% 
   dplyr::select(x6, x9, x11) %>% 
@@ -1257,7 +1284,7 @@ ssmetrics_final_2 %>%
   dplyr::left_join(campus_abb) -> ssmetrics_final_2
 
 ################### Additional Code revise 10/03/2023 #######################
-pre_ss_metrics <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.05.2024/SS Metrics 0305.xlsx")
+pre_ss_metrics <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.12.2024/SS Metrics 0312.xlsx")
 
 pre_ss_metrics %>% 
   dplyr::select(Item, Category, Platform, macro_platform, Type, Stocking_Type_Description, mfg_line, capacity_status) %>% 
@@ -1284,7 +1311,7 @@ ssmetrics_final_2 %>%
 
 
 ################### Additional Code revise 10/24/2023 #######################
-iqr_fg <- readxl::read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/FG/weekly run data/2024/03.05.2024/Finished Goods Inventory Health Adjusted Forward (IQR) NEW TEMPLATE - 03.05.2024.xlsx",
+iqr_fg <- readxl::read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/FG/weekly run data/2024/03.12.2024/Finished Goods Inventory Health Adjusted Forward (IQR) NEW TEMPLATE - 03.12.2024.xlsx",
                              sheet = "Location FG")
 
 
@@ -1429,7 +1456,7 @@ ssmetrics_final_2 %>%
 #####################################################################################################################################
 
 
-writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.12.2024/SS Metrics 0312.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/03.19.2024/SS Metrics 0319.xlsx") 
 
 
 
@@ -1458,7 +1485,7 @@ ssmetrics_mainboard %>%
 
 
 # (Path revision needed) ----
-save(ssmetrics_mainboard, file = "C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_03_12_2024.rds")
+save(ssmetrics_mainboard, file = "C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_03_19_2024.rds")
 
 
 
