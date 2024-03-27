@@ -483,7 +483,7 @@ JDOH_complete %>%
   filter(!str_starts(Description, "PWS ") & 
            !str_starts(Description, "SUB ") & 
            !str_starts(Description, "THW ") & 
-           !str_starts(Description, "PALEET")) -> JDOH_complete
+           !str_starts(Description, "PALLET")) -> JDOH_complete
 
 
 
