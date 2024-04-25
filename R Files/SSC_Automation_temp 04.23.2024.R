@@ -470,16 +470,16 @@ JDOH_complete_2 %>%
 
 JDOH_complete_2_2 %>% 
   dplyr::group_by(ref, inventory_hold_status) %>% 
-  dplyr::summarise(current_inventory_balance = sum(current_inventory_balance), .groups = "drop") %>% 
+  dplyr::summarise(current_inventory_balance = sum(current_inventory_balance)) %>% 
   tidyr::pivot_wider(names_from = inventory_hold_status, 
-              values_from = current_inventory_balance) %>% 
+                     values_from = current_inventory_balance) %>% 
   janitor::clean_names() %>% 
-  dplyr::mutate(soft_hold = ifelse("soft_hold" %in% names(.), soft_hold, 0),
-         useable = replace(useable, is.na(useable), 0),
-         hard_hold = replace(hard_hold, is.na(hard_hold), 0)) %>%
+  dplyr::mutate(useable = replace(useable, is.na(useable), 0),
+                hard_hold = replace(hard_hold, is.na(hard_hold), 0),
+                soft_hold = replace(soft_hold, is.na(soft_hold), 0)) %>%
   dplyr::mutate(Balance_Usable = useable + soft_hold,
-         Balance_Hold = hard_hold,
-         On_Hand = Balance_Usable + Balance_Hold) %>% 
+                Balance_Hold = hard_hold,
+                On_Hand = Balance_Usable + Balance_Hold) %>% 
   dplyr::select(-useable, -hard_hold, -soft_hold) -> JDOH_complete_2_2
 
 
@@ -931,6 +931,8 @@ plyr::ddply(ssmetrics_final, "campus_ref", transform, campus_total_available_1 =
 plyr::ddply(ssmetrics_final, "campus_ref", transform, campus_total_available_2 = sum(Balance_Hold)) -> ssmetrics_final
 
 ssmetrics_final %>% 
+  dplyr::mutate(campus_total_available_1 = ifelse(is.na(campus_total_available_1), 0, campus_total_available_1),
+                campus_total_available_2 = ifelse(is.na(campus_total_available_2), 0, campus_total_available_2)) %>%
   dplyr::mutate(campus_total_available = campus_total_available_1 + campus_total_available_2) %>% 
   dplyr::select(-campus_total_available_1, -campus_total_available_2) -> ssmetrics_final
 
