@@ -1420,7 +1420,7 @@ ssmetrics_final_2 %>%
 #####################################################################################################################################
 
 
-writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/04.23.2024/SS Metrics 0423_2.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/04.23.2024/SS Metrics 0423.xlsx") 
 
 
 
