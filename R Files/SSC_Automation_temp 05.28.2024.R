@@ -159,24 +159,7 @@ colnames(Planner_address)[1] <- "Planner_No"
 Planner_address %>% 
   dplyr::select(1:2) -> Planner_address
 
-# (Path revision needed) JDE VF Item Branch - Work with Item Branch ----
-JD_item_branch <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/05.28.2024/Item_Branch.xlsx",
-                             col_names = FALSE)
 
-colnames(JD_item_branch) <- JD_item_branch[1, ]
-JD_item_branch[-1, ] -> JD_item_branch
-
-names(JD_item_branch) <- str_replace_all(names(JD_item_branch), c(" " = "_"))
-names(JD_item_branch) <- str_replace_all(names(JD_item_branch), c("/" = "_"))
-names(JD_item_branch) <- str_replace_all(names(JD_item_branch), c("2" = "second"))
-
-colnames(JD_item_branch)[1] <- "Location"
-colnames(JD_item_branch)[2] <- "Item"
-
-readr::type_convert(JD_item_branch) -> JD_item_branch
-
-JD_item_branch %>%
-  dplyr::mutate(ref = paste0(Location, "_", Item)) -> JD_item_branch
 
 # (Path revision needed) exception report ----
 exception_report <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2024/05.28.2024/exception report.xlsx")
