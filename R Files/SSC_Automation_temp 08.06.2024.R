@@ -6,10 +6,10 @@ library(writexl)
 library(reshape2)
 library(skimr)
 
-specific_date <- as.Date("2024-08-06")
+specific_date <- as.Date("2024-08-13")
 
 # (Path revision needed) load main board (mega data) ----
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_07_30_2024.rds")
+load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_08_06_2024.rds")
 
 
 ssmetrics_mainboard %>%
