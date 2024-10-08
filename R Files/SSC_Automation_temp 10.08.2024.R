@@ -315,11 +315,11 @@ po <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Report ingredients/
 po %>% 
   janitor::clean_names() %>% 
   dplyr::mutate(loc_item = gsub("-", "_", loc_item)) %>% 
-  dplyr::select(loc_item, x2nd_item_number, location, quantity_to_receive, promised_delivery_date) %>% 
+  dplyr::select(loc_item, x2nd_item_number, location, sum_of_quantity_to_receive, promised_delivery_date) %>% 
   dplyr::rename(ref = loc_item,
                 item = x2nd_item_number,
                 loc = location,
-                qty = quantity_to_receive,
+                qty = sum_of_quantity_to_receive,
                 date = promised_delivery_date) %>% 
   dplyr::mutate(date = as.Date(date),
                 year = year(date),
