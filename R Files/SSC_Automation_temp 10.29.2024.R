@@ -266,7 +266,7 @@ wo <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Report ingredients/
 wo %>% 
   janitor::clean_names() %>% 
   dplyr::mutate(ref = paste0(location, "_", item)) %>% 
-  dplyr::mutate(in_next_7_days = ifelse(date >= specific_date & date < specific_date+7, "Y", "N")) %>% 
+  dplyr::mutate(in_next_28_days = ifelse(date >= specific_date & date < specific_date+7, "Y", "N")) %>% 
   dplyr::rename(Qty = production_scheduled_cases) %>% 
   reshape2::dcast(ref ~ in_next_7_days, value.var = "Qty", sum) %>% 
   dplyr::mutate(N = as.integer(N)) -> wo_pivot
