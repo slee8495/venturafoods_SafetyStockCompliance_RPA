@@ -409,7 +409,7 @@ JDOH_complete %>%
   dplyr::left_join(exception_report %>% dplyr::select(ref, Safety_Stock), by = "ref") %>% 
   dplyr::mutate(Safety_Stock = replace(Safety_Stock, is.na(Safety_Stock), 0)) %>% 
   dplyr::mutate(Safety_Stock = as.double(Safety_Stock)) %>% 
-  dplyr::left_join(exception_report %>% dplyr::select(ref, Planner), by = "ref") %>% 
+  dplyr::left_join(exception_report %>% dplyr::select(ref, Planner), by = "ref") %>%  # basically we are bringing stafy_stock and planner from exception report. 
   dplyr::rename(Planner_No = Planner) %>% 
   dplyr::mutate(Planner_No = replace(Planner_No, is.na(Planner_No), 0)) %>% 
   dplyr::left_join(Planner_address) %>% 
@@ -535,7 +535,6 @@ loc_430_for_jdoh %>%
                 Balance_Hold = 0) %>% 
   dplyr::relocate(ref, Location, Item, Description, Balance_Usable, Balance_Hold, On_Hand, Safety_Stock, Planner_No, Planner_Name) %>% 
   dplyr::mutate(Safety_Stock = as.double(Safety_Stock))  -> loc_430_for_jdoh
-
 
 
 
