@@ -17,7 +17,7 @@ ss_metrics %>%
     total_safety_stock = sum(campus_ss_on_hand, na.rm = TRUE),
     total_balance_usable = sum(balance_usable, na.rm = TRUE),
     total_cases_below_ss = sum(campus_case_below_ss, na.rm = TRUE),
-    count_refs = n_distinct(campus_ref),  
+    count_campus_refs = n_distinct(campus_ref),  
     safety_stock_percentage = (sum(safety_stock, na.rm = TRUE) / sum(balance_usable, na.rm = TRUE)) * 100,
     ss_adherence_percentage = (sum(campus_ss_on_hand, na.rm = TRUE) / sum(campus_ss, na.rm = TRUE)) * 100,
     ss_ratio = total_balance_usable / total_safety_stock
