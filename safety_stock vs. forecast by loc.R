@@ -12,6 +12,7 @@ ss_metrics <- read_xlsx("S:/Supply Chain Projects/Data Source (SCE)/Analytics/sa
 ss_metrics %>%
   janitor::clean_names() %>%
   mutate(year_month = format(as.Date(date, format = "%m/%d/%Y"), "%Y-%m")) %>% 
+  filter(item == "24262KFC") %>% 
   group_by(campus, year_month) %>%
   summarise(
     total_safety_stock = sum(campus_ss_on_hand, na.rm = TRUE),
@@ -41,6 +42,7 @@ dsx %>%
     year_month = format(as.Date(paste0(substr(forecast_month_year_id, 1, 4), "-", substr(forecast_month_year_id, 5, 6), "-01")), "%Y-%m"), 
     campus = as.character(product_manufacturing_location_code)
   ) %>%
+  filter(product_label_sku_code == "24262-KFC") %>% 
   group_by(campus, year_month) %>%
   mutate(adjusted_forecast_cases = as.double(adjusted_forecast_cases)) %>% 
   summarize(forecasted = sum(adjusted_forecast_cases, na.rm = TRUE)) -> dsx_analysis
