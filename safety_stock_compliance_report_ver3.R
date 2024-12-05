@@ -343,10 +343,10 @@ po %>%
 
 # PO_Pivot 
 po %>% 
-  dplyr::mutate(next_28_days = ifelse(date >= specific_date & date <= specific_date + 28, "Y", "N")) -> po
+  dplyr::mutate(next_7_days = ifelse(date >= specific_date & date <= specific_date + 7, "Y", "N")) -> po
 
 
-reshape2::dcast(po, ref ~ next_28_days, value.var = "qty", sum)  -> PO_Pivot
+reshape2::dcast(po, ref ~ next_7_days, value.var = "qty", sum)  -> PO_Pivot
 
 
 
