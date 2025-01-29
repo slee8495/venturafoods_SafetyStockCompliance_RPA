@@ -9,7 +9,7 @@ library(skimr)
 specific_date <- as.Date("2025-01-21")
 
 # (Path revision needed) load main board (mega data) ----
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_01_14_2025.rds") # Load pre week
+load("C:/Users/SPoudel/OneDrive - Ventura Foods/Desktop/VenturaCodesRStudio/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_01_14_2025.rds") # Load pre week
 
 
 ssmetrics_mainboard %>%
@@ -24,7 +24,7 @@ readr::type_convert(ssmetrics_mainboard) -> ssmetrics_mainboard
 campus_abb <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Campus Abb.xlsx")
 
 # Category (From BI) ---- 
-category_bi <- read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2022/12.19.2022/BI Category and Platform and pack size.xlsx") ### No Impact ###
+category_bi <- read_excel("C:/Users/SPoudel/Ventura Foods/SC Analytics Team - General/Stan Report Files/BI Category and Platform and pack size.xlsx") ### No Impact ###
 
 category_bi[-1, ] -> category_bi
 colnames(category_bi) <- category_bi[1, ]
@@ -38,7 +38,7 @@ category_bi %>%
   dplyr::mutate(Item = gsub("-", "", Item)) -> category_bi
 
 # Stock type ----
-load("C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/stock_type.rds")
+load("C:/Users/SPoudel/OneDrive - Ventura Foods/Desktop/VenturaCodesRStudio/venturafoods_SafetyStockCompliance_RPA/rds files/stock_type.rds")
 
 # (Path revision needed) Macro-platform (change this only when there's a change) ----
 macro_platform <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Macro platform.xlsx",
@@ -162,7 +162,7 @@ Planner_address %>%
 
 
 # (Path revision needed) exception report ----
-exception_report <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/JDE Exception report extract/2025/exception report 2025.01.21.xlsx")
+exception_report <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/JDE Exception report extract/2025/exception report 2025.01.28.xlsx")
 
 readr::type_convert(exception_report) -> exception_report
 
@@ -358,9 +358,9 @@ reshape2::dcast(po, ref ~ next_7_days, value.var = "qty", sum)  -> PO_Pivot
 
 
 
-JDOH_complete <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Inventory/Inventory with Lot Report v.2 - 2025.01.21.xlsx",
+JDOH_complete <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Inventory/Inventory with Lot Report v.2 - 2025.01.28.xlsx",
                             sheet = "FG")
-JDOH_complete_2 <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Inventory/Inventory with Lot Report v.2 - 2025.01.21.xlsx",
+JDOH_complete_2 <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Inventory/Inventory with Lot Report v.2 - 2025.01.28.xlsx",
                               sheet = "RM")
 
 
@@ -554,7 +554,7 @@ lot_status_code %>%
 
 
 
-jde_inv_for_25_55_label <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Inventory/JDE Inventory Lot Detail - 2025.01.21.xlsx")
+jde_inv_for_25_55_label <- read_excel("S:/Supply Chain Projects/Data Source (SCE)/Inventory/JDE Inventory Lot Detail - 2025.01.28.xlsx")
 
 jde_inv_for_25_55_label[-1:-5, ] -> jde_inv_for_25_55_label
 colnames(jde_inv_for_25_55_label) <- jde_inv_for_25_55_label[1, ]
@@ -1254,7 +1254,7 @@ ssmetrics_final_2 %>%
 
 
 ################### Additional Code revise 10/24/2023 #######################
-iqr_fg <- readxl::read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/FG/weekly run data/2025/01.14.2025/Finished Goods Inventory Health Adjusted Forward (IQR) NEW TEMPLATE - 01.14.2025.xlsx",
+iqr_fg <- readxl::read_excel("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/IQR Automation/FG/weekly run data/2025/01.21.2025/Finished Goods Inventory Health Adjusted Forward (IQR) NEW TEMPLATE - 01.21.2025.xlsx",
                              sheet = "Location FG")
 
 
@@ -1415,7 +1415,7 @@ ssmetrics_final_2 %>%
 #####################################################################################################################################
 
 
-writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2025/01.21.2025/SS Metrics 0121.xlsx") 
+writexl::write_xlsx(ssmetrics_final_2, "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2025/01.28.2025/SS Metrics 0121.xlsx") 
 
 
 
@@ -1444,7 +1444,7 @@ ssmetrics_mainboard %>%
 
 
 # (Path revision needed) ----
-save(ssmetrics_mainboard, file = "C:/Users/slee/OneDrive - Ventura Foods/Stan/R Codes/Projects/Safety_Stock_Compliance/RPA/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_01_21_2025.rds")
+save(ssmetrics_mainboard, file = "C:/Users/SPoudel/OneDrive - Ventura Foods/Desktop/VenturaCodesRStudio/venturafoods_SafetyStockCompliance_RPA/rds files/ssmetrics_mainboard_01_28_2025.rds")
 
 
 
@@ -1453,8 +1453,8 @@ save(ssmetrics_mainboard, file = "C:/Users/slee/OneDrive - Ventura Foods/Stan/R 
 #######################################################################################################################################
 #######################################################################################################################################
 
-file.copy("C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2025/01.14.2025/Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 01.14.2025.xlsb",
-          "C:/Users/slee/OneDrive - Ventura Foods/Ventura Work/SCE/Project/FY 23/Safety Stock Compliance/Weekly Run Files/2025/01.21.2025/Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 01.21.2025.xlsb")
+file.copy("C:/Users/SPoudel/Ventura Foods/SC Analytics Team - General/Stan Report Files/File Repository/Safety Stock Compliance/Weekly Run Files/2025/01.21.2025/Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 01.21.2025.xlsb",
+          "C:/Users/SPoudel/Ventura Foods/SC Analytics Team - General/Stan Report Files/File Repository/Safety Stock Compliance/Weekly Run Files/2025/01.28.2025/Weekly Safety Stock Compliance Report v4 rolling 53 weeks - 01.28.2025.xlsb")
 
 
 
